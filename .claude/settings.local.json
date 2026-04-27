@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const p = require\\('./node_modules/phaser/package.json'\\); console.log\\(p.version\\);\")",
+      "Bash(npm run *)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}
