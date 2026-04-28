@@ -15,8 +15,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // Circular hitbox centered on the triangle (nose at y=2, base at y=36, center ~y=20)
-        this.body.setCircle(16, 4, 4);
+        // Pivot at hull center (y=35 of 100px texture); display at 40×50px
+        this.setOrigin(0.5, 0.35);
+        this.setScale(0.5);
+
+        // Circular hitbox in display-pixel space (radius 16, centered on hull)
+        this.body.setCircle(16, 4, 2);
         this.body.setMaxVelocity(SHIP_MAX_SPEED, SHIP_MAX_SPEED);
         this.body.setDamping(true);
         this.body.setDrag(0.99, 0.99);
@@ -48,6 +52,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             this.setTexture(TEX.SHIP);
         }
 
+        // setTexture resets scale — reapply after every swap
+        this.setScale(0.5);
+
         // Fire
         if (input.state.fire) {
             this._tryFire();
@@ -58,10 +65,10 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         const bullets = this.scene.bullets.getChildren();
         if (bullets.length >= MAX_PLAYER_BULLETS) { return; }
 
-        // Spawn bullet from the nose (18px forward from center)
+        // Spawn bullet from the nose (15px forward from hull center, matching new ship size)
         const rad = Phaser.Math.DegToRad(this.angle - 90);
-        const noseX = this.x + Math.cos(rad) * 18;
-        const noseY = this.y + Math.sin(rad) * 18;
+        const noseX = this.x + Math.cos(rad) * 15;
+        const noseY = this.y + Math.sin(rad) * 15;
 
         const bullet = new Bullet(this.scene, noseX, noseY);
         this.scene.bullets.add(bullet);

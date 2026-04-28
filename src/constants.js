@@ -1,5 +1,5 @@
-export const SCREEN_W = 800;
-export const SCREEN_H = 600;
+export const SCREEN_W = 1920;
+export const SCREEN_H = 1080;
 
 export const TEX = {
     SHIP:         'ship',

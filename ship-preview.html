@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ship Design Preview</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+      padding: 24px;
+    }
+    h1 { font-size: 14px; color: #888; margin-bottom: 24px; }
+    .section { margin-bottom: 36px; }
+    .section-label { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .row { display: flex; align-items: flex-end; gap: 40px; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .cell-label { font-size: 10px; color: #666; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <h1>Ship Design Preview — 80×80px texture, displayed at 40px in 1920×1080 game</h1>
+  <div class="section">
+    <div class="section-label">Idle</div>
+    <div class="row" id="idleRow"></div>
+  </div>
+  <div class="section">
+    <div class="section-label">Thrust</div>
+    <div class="row" id="thrustRow"></div>
+  </div>
+
+  <script>
+    function drawShip(ctx, thrust) {
+      ctx.save();
+
+      // Flame (drawn behind ship body)
+      if (thrust) {
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = '#ff4400';
+        ctx.beginPath();
+        ctx.moveTo(32, 75);
+        ctx.lineTo(40, 96);
+        ctx.lineTo(48, 75);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = '#ffcc00';
+        ctx.beginPath();
+        ctx.moveTo(35, 75);
+        ctx.lineTo(40, 89);
+        ctx.lineTo(45, 75);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1.0;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(37, 75);
+        ctx.lineTo(40, 82);
+        ctx.lineTo(43, 75);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Hull body fill
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath();
+      ctx.moveTo(40, 6);
+      ctx.lineTo(54, 44);
+      ctx.lineTo(52, 64);
+      ctx.lineTo(28, 64);
+      ctx.lineTo(26, 44);
+      ctx.closePath();
+      ctx.fill();
+
+      // Left wing fill
+      ctx.fillStyle = '#16213e';
+      ctx.beginPath();
+      ctx.moveTo(26, 44);
+      ctx.lineTo(4, 62);
+      ctx.lineTo(20, 68);
+      ctx.lineTo(28, 64);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right wing fill
+      ctx.beginPath();
+      ctx.moveTo(54, 44);
+      ctx.lineTo(76, 62);
+      ctx.lineTo(60, 68);
+      ctx.lineTo(52, 64);
+      ctx.closePath();
+      ctx.fill();
+
+      // Engine nozzle fill
+      ctx.fillStyle = '#333333';
+      ctx.beginPath();
+      ctx.moveTo(34, 64);
+      ctx.lineTo(46, 64);
+      ctx.lineTo(44, 75);
+      ctx.lineTo(36, 75);
+      ctx.closePath();
+      ctx.fill();
+
+      // White outlines
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+
+      ctx.beginPath();
+      ctx.moveTo(40, 6);
+      ctx.lineTo(54, 44);
+      ctx.lineTo(52, 64);
+      ctx.lineTo(28, 64);
+      ctx.lineTo(26, 44);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(26, 44);
+      ctx.lineTo(4, 62);
+      ctx.lineTo(20, 68);
+      ctx.lineTo(28, 64);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(54, 44);
+      ctx.lineTo(76, 62);
+      ctx.lineTo(60, 68);
+      ctx.lineTo(52, 64);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(34, 64);
+      ctx.lineTo(46, 64);
+      ctx.lineTo(44, 75);
+      ctx.lineTo(36, 75);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Hull detail lines
+      ctx.strokeStyle = '#888888';
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.moveTo(40, 14);
+      ctx.lineTo(40, 64);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(36, 22);
+      ctx.lineTo(27, 52);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(44, 22);
+      ctx.lineTo(53, 52);
+      ctx.stroke();
+
+      // Wing brace lines
+      ctx.strokeStyle = '#666666';
+      ctx.lineWidth = 0.8;
+
+      ctx.beginPath();
+      ctx.moveTo(26, 50);
+      ctx.lineTo(18, 60);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(54, 50);
+      ctx.lineTo(62, 60);
+      ctx.stroke();
+
+      // Cockpit
+      ctx.fillStyle = '#003355';
+      ctx.strokeStyle = '#00ccff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(40, 24, 7, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Nozzle glow ring
+      ctx.strokeStyle = '#ff6600';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(40, 75, 5, 2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    const sizes = [
+      { label: '40px — actual game size', scale: 0.5 },
+      { label: '80px — 1×',              scale: 1.0 },
+      { label: '160px — 2×',             scale: 2.0 },
+      { label: '320px — 4×',             scale: 4.0 },
+    ];
+
+    ['idle', 'thrust'].forEach(mode => {
+      const row = document.getElementById(mode + 'Row');
+      const thrust = mode === 'thrust';
+
+      sizes.forEach(({ label, scale }) => {
+        const w = Math.round(80 * scale);
+        const h = Math.round(100 * scale);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+        drawShip(ctx, thrust);
+
+        const lbl = document.createElement('div');
+        lbl.className = 'cell-label';
+        lbl.textContent = label;
+
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.appendChild(canvas);
+        cell.appendChild(lbl);
+
+        row.appendChild(cell);
+      });
+    });
+  </script>
+</body>
+</html>
