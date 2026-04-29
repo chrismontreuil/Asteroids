@@ -9,6 +9,7 @@ import {
     BURST_BULLET_DELAY,
 } from '../constants.js';
 import { Bullet } from './Bullet.js';
+import { HeatSeekBullet } from './HeatSeekBullet.js';
 
 export class Ship extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -36,6 +37,8 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this._burstTimer = null;
 
         this.hasWideFire = false;
+
+        this.hasHeatSeek = false;
     }
 
     update(input) {
@@ -76,6 +79,11 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             return;
         }
 
+        if (this.hasHeatSeek) {
+            this._fireHeatSeek();
+            return;
+        }
+
         if (!this.hasBurstFire) {
             this._fireOnce();
             return;
@@ -94,6 +102,54 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             const rad = Phaser.Math.DegToRad(this.angle - 90 + offset);
             this._fireOnceAtAngle(rad, 0xffff00);
         }
+    }
+
+    _fireHeatSeek() {
+        const rad = Phaser.Math.DegToRad(this.angle - 90);
+        const noseX = this.x + Math.cos(rad) * 15;
+        const noseY = this.y + Math.sin(rad) * 15;
+
+        const targets = this._get5ClosestAsteroidsInFront(rad);
+
+        for (let i = 0; i < 5; i++) {
+            const bullets = this.scene.bullets.getChildren();
+            if (bullets.length >= MAX_PLAYER_BULLETS) {
+                break;
+            }
+
+            const target = targets[i] || null;
+            const bullet = new HeatSeekBullet(this.scene, noseX, noseY, target);
+            bullet.setTint(0x00ff00);
+            this.scene.bullets.add(bullet);
+            bullet.launch(rad, 400);
+        }
+
+        this.scene.audioManager.playShoot();
+    }
+
+    _get5ClosestAsteroidsInFront(shipAngleRad) {
+        const allAsteroids = this.scene.asteroids.getChildren();
+        const inFront = [];
+
+        for (const asteroid of allAsteroids) {
+            if (!asteroid.active) continue;
+
+            const dx = asteroid.x - this.x;
+            const dy = asteroid.y - this.y;
+            const asteroidAngle = Math.atan2(dy, dx);
+
+            const angleDiff = Phaser.Math.Angle.Wrap(asteroidAngle - shipAngleRad);
+            const absDiff = Math.abs(angleDiff);
+
+            if (absDiff <= Math.PI / 2) {
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                inFront.push({ asteroid, distance });
+            }
+        }
+
+        inFront.sort((a, b) => a.distance - b.distance);
+
+        return inFront.slice(0, 5).map(item => item.asteroid);
     }
 
     _fireBurst() {
@@ -164,6 +220,8 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
         } else if (this.hasBurstFire) {
             this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
+        } else if (this.hasHeatSeek) {
+            this.setTexture(isThrusting ? TEX.SHIP_HEAT_THRUST : TEX.SHIP_HEAT);
         } else {
             this.setTexture(isThrusting ? TEX.SHIP_THRUST : TEX.SHIP);
         }
@@ -171,8 +229,10 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
     enableBurstFire() {
         if (this.hasWideFire) {
-            // Switch from wide to burst
             this.hasWideFire = false;
+        }
+        if (this.hasHeatSeek) {
+            this.hasHeatSeek = false;
         }
         this.hasBurstFire = true;
         this._setTextureForState(false);
@@ -180,7 +240,6 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
     enableWideFire() {
         if (this.hasBurstFire) {
-            // Switch from burst to wide
             this.hasBurstFire = false;
             this._burstActive = false;
             this._burstCount = 0;
@@ -189,13 +248,35 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
                 this._burstTimer = null;
             }
         }
+        if (this.hasHeatSeek) {
+            this.hasHeatSeek = false;
+        }
         this.hasWideFire = true;
+        this._setTextureForState(false);
+    }
+
+    enableHeatSeek() {
+        // Disable other fire modes
+        if (this.hasBurstFire) {
+            this.hasBurstFire = false;
+            this._burstActive = false;
+            this._burstCount = 0;
+            if (this._burstTimer) {
+                this.scene.time.removeEvent(this._burstTimer);
+                this._burstTimer = null;
+            }
+        }
+        if (this.hasWideFire) {
+            this.hasWideFire = false;
+        }
+        this.hasHeatSeek = true;
         this._setTextureForState(false);
     }
 
     resetAbilities() {
         this.hasBurstFire = false;
         this.hasWideFire = false;
+        this.hasHeatSeek = false;
         this._setTextureForState(false);
         this._burstActive = false;
         this._burstCount = 0;

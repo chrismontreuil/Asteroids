@@ -6,6 +6,6 @@ export class GreenPickup extends Pickup {
     }
 
     onPickup(ship) {
-        // Green pickup doesn't do anything for now
+        ship.enableHeatSeek();
     }
 }

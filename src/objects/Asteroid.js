@@ -1,12 +1,10 @@
-import { SIZE_TO_TEX, SIZE_TO_RADIUS, SIZE_TO_SPEED, SCORE_FOR_SIZE } from '../constants.js';
+import { getAsteroidTexture, SIZE_TO_RADIUS_X, SIZE_TO_RADIUS_Y, SIZE_TO_SPEED, SCORE_FOR_SIZE } from '../constants.js';
 
-// Each size class uses 5px padding around its radius (see TextureFactory),
-// so the hitbox offset to center the circle is always (5, 5).
 const HITBOX_OFFSET = 5;
 
 export class Asteroid extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, size) {
-        super(scene, x, y, SIZE_TO_TEX[size]);
+        super(scene, x, y, getAsteroidTexture(size));
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -14,8 +12,10 @@ export class Asteroid extends Phaser.Physics.Arcade.Sprite {
         this.size       = size;
         this.scoreValue = SCORE_FOR_SIZE[size];
 
-        const radius = SIZE_TO_RADIUS[size];
-        this.body.setCircle(radius, HITBOX_OFFSET, HITBOX_OFFSET);
+        const radiusX = SIZE_TO_RADIUS_X[size];
+        const radiusY = SIZE_TO_RADIUS_Y[size];
+        const avgRadius = (radiusX + radiusY) / 2;
+        this.body.setCircle(avgRadius, HITBOX_OFFSET, HITBOX_OFFSET);
     }
 
     // Called after group.add() to set velocity — Phaser can reset body state during add()

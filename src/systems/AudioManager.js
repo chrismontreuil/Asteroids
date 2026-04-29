@@ -27,8 +27,8 @@ export class AudioManager {
         gain.connect(ctx.destination);
 
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.12);
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.12);
 
         gain.gain.setValueAtTime(0.25, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
@@ -38,13 +38,13 @@ export class AudioManager {
     }
 
     playExplosion(size) {
-        const ctx      = this._getCtx();
-        const duration = size === 'large' ? 0.5 : size === 'medium' ? 0.3 : 0.15;
-        const volume   = size === 'large' ? 0.5 : size === 'medium' ? 0.35 : 0.2;
+        const ctx = this._getCtx();
+        const duration = 2;
+        const volume = size === 'large' ? 0.4 : size === 'medium' ? 0.3 : 0.2;
 
         const bufferSize = Math.floor(ctx.sampleRate * duration);
-        const buffer     = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data       = buffer.getChannelData(0);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
@@ -52,11 +52,16 @@ export class AudioManager {
         const source = ctx.createBufferSource();
         source.buffer = buffer;
 
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(280, ctx.currentTime);
+
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(volume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
 
-        source.connect(gain);
+        source.connect(filter);
+        filter.connect(gain);
         gain.connect(ctx.destination);
         source.start();
     }
@@ -64,30 +69,38 @@ export class AudioManager {
     startThruster() {
         if (this._thrusterNodes) { return; }
 
-        const ctx  = this._getCtx();
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
+        const ctx = this._getCtx();
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
 
-        osc.connect(gain);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const gain = ctx.createGain();
+        source.connect(gain);
         gain.connect(ctx.destination);
 
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(70, ctx.currentTime);
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
 
-        osc.start();
-        this._thrusterNodes = { osc, gain };
+        source.start();
+        this._thrusterNodes = { source, gain };
     }
 
     stopThruster() {
         if (!this._thrusterNodes) { return; }
 
-        const { osc, gain } = this._thrusterNodes;
+        const { source, gain } = this._thrusterNodes;
         const ctx = this._getCtx();
 
         gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-        osc.stop(ctx.currentTime + 0.08);
+        source.stop(ctx.currentTime + 0.08);
 
         this._thrusterNodes = null;
     }
@@ -109,7 +122,7 @@ export class AudioManager {
 
     _thump(phase) {
         const ctx  = this._getCtx();
-        const freq = phase === 0 ? 60 : 75;
+        const freq = phase === 0 ? 30 : 37;
 
         const osc  = ctx.createOscillator();
         const gain = ctx.createGain();

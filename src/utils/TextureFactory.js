@@ -9,9 +9,13 @@ export const TextureFactory = {
         this._createShipBurstThrust(scene);
         this._createShipWide(scene);
         this._createShipWideThrust(scene);
-        this._createAsteroid(scene, TEX.ASTEROID_LG, 40, 12);
-        this._createAsteroid(scene, TEX.ASTEROID_MD, 20, 10);
-        this._createAsteroid(scene, TEX.ASTEROID_SM, 10, 8);
+        this._createShipHeat(scene);
+        this._createShipHeatThrust(scene);
+        for (let i = 0; i < 4; i++) {
+            this._createAsteroid(scene, `${TEX.ASTEROID_LG}-${i}`, 40, 28, 24);
+            this._createAsteroid(scene, `${TEX.ASTEROID_MD}-${i}`, 20, 14, 18);
+            this._createAsteroid(scene, `${TEX.ASTEROID_SM}-${i}`, 10, 7, 14);
+        }
         this._createBullet(scene);
         this._createParticle(scene);
         this._createBurstPickup(scene);
@@ -94,6 +98,31 @@ export const TextureFactory = {
         g.destroy();
     },
 
+    _createShipHeat(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        this._drawShipBodyTinted(g, 0x00ff00);
+        g.generateTexture(TEX.SHIP_HEAT, 80, 100);
+        g.destroy();
+    },
+
+    _createShipHeatThrust(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+
+        // Flame drawn before hull so it appears behind
+        g.fillStyle(0xff4400, 0.7);
+        g.fillTriangle(32, 75, 40, 96, 48, 75);
+
+        g.fillStyle(0xffcc00, 0.9);
+        g.fillTriangle(35, 75, 40, 89, 45, 75);
+
+        g.fillStyle(0xffffff, 1);
+        g.fillTriangle(37, 75, 40, 82, 43, 75);
+
+        this._drawShipBodyTinted(g, 0x00ff00);
+        g.generateTexture(TEX.SHIP_HEAT_THRUST, 80, 100);
+        g.destroy();
+    },
+
     _drawShipBody(g) {
         this._drawShipBodyFills(g, 0x555555, 0x444444, 0x333333);
         this._drawShipBodyStrokes(g);
@@ -107,125 +136,77 @@ export const TextureFactory = {
     },
 
     _drawShipBodyFills(g, hullColor, wingColor, nozzleColor) {
-        // Hull fill
+        // Main triangle hull
         g.fillStyle(hullColor, 1);
         g.beginPath();
         g.moveTo(40, 6);
-        g.lineTo(54, 44);
-        g.lineTo(52, 64);
-        g.lineTo(28, 64);
-        g.lineTo(26, 44);
+        g.lineTo(56, 50);
+        g.lineTo(24, 50);
         g.closePath();
         g.fillPath();
 
-        // Left wing fill
+        // Left wing tip
         g.fillStyle(wingColor, 1);
         g.beginPath();
-        g.moveTo(26, 44);
-        g.lineTo(4,  62);
-        g.lineTo(20, 68);
-        g.lineTo(28, 64);
+        g.moveTo(24, 50);
+        g.lineTo(10, 58);
+        g.lineTo(18, 62);
         g.closePath();
         g.fillPath();
 
-        // Right wing fill
+        // Right wing tip
         g.beginPath();
-        g.moveTo(54, 44);
-        g.lineTo(76, 62);
-        g.lineTo(60, 68);
-        g.lineTo(52, 64);
+        g.moveTo(56, 50);
+        g.lineTo(70, 58);
+        g.lineTo(62, 62);
         g.closePath();
         g.fillPath();
 
-        // Engine nozzle fill
+        // Engine nozzle fill (smaller)
         g.fillStyle(nozzleColor, 1);
         g.beginPath();
-        g.moveTo(34, 64);
-        g.lineTo(46, 64);
-        g.lineTo(44, 75);
-        g.lineTo(36, 75);
+        g.moveTo(36, 50);
+        g.lineTo(44, 50);
+        g.lineTo(42, 65);
+        g.lineTo(38, 65);
         g.closePath();
         g.fillPath();
     },
 
     _drawShipBodyStrokes(g) {
-        // White outlines
-        g.lineStyle(1.5, 0xffffff, 1);
-
+        // Main triangle outline
+        g.lineStyle(2, 0xffffff, 1);
         g.beginPath();
         g.moveTo(40, 6);
-        g.lineTo(54, 44);
-        g.lineTo(52, 64);
-        g.lineTo(28, 64);
-        g.lineTo(26, 44);
+        g.lineTo(56, 50);
+        g.lineTo(24, 50);
         g.closePath();
         g.strokePath();
 
+        // Left wing outline
         g.beginPath();
-        g.moveTo(26, 44);
-        g.lineTo(4,  62);
-        g.lineTo(20, 68);
-        g.lineTo(28, 64);
+        g.moveTo(24, 50);
+        g.lineTo(10, 58);
+        g.lineTo(18, 62);
         g.closePath();
         g.strokePath();
 
+        // Right wing outline
         g.beginPath();
-        g.moveTo(54, 44);
-        g.lineTo(76, 62);
-        g.lineTo(60, 68);
-        g.lineTo(52, 64);
+        g.moveTo(56, 50);
+        g.lineTo(70, 58);
+        g.lineTo(62, 62);
         g.closePath();
         g.strokePath();
 
+        // Engine nozzle outline
         g.beginPath();
-        g.moveTo(34, 64);
-        g.lineTo(46, 64);
-        g.lineTo(44, 75);
-        g.lineTo(36, 75);
+        g.moveTo(36, 50);
+        g.lineTo(44, 50);
+        g.lineTo(42, 65);
+        g.lineTo(38, 65);
         g.closePath();
         g.strokePath();
-
-        // Hull detail lines
-        g.lineStyle(1, 0x888888, 1);
-
-        g.beginPath();
-        g.moveTo(40, 14);
-        g.lineTo(40, 64);
-        g.strokePath();
-
-        g.beginPath();
-        g.moveTo(36, 22);
-        g.lineTo(27, 52);
-        g.strokePath();
-
-        g.beginPath();
-        g.moveTo(44, 22);
-        g.lineTo(53, 52);
-        g.strokePath();
-
-        // Wing brace lines
-        g.lineStyle(0.8, 0x666666, 1);
-
-        g.beginPath();
-        g.moveTo(26, 50);
-        g.lineTo(18, 60);
-        g.strokePath();
-
-        g.beginPath();
-        g.moveTo(54, 50);
-        g.lineTo(62, 60);
-        g.strokePath();
-
-        // Cockpit
-        g.fillStyle(0x003355, 1);
-        g.fillEllipse(40, 24, 14, 18);
-
-        g.lineStyle(1.5, 0x00ccff, 1);
-        g.strokeEllipse(40, 24, 14, 18);
-
-        // Nozzle glow ring
-        g.lineStyle(1, 0xff6600, 1);
-        g.strokeEllipse(40, 75, 10, 4);
     },
 
     _blendColor(baseColor, tintColor) {
@@ -244,10 +225,10 @@ export const TextureFactory = {
         return (r << 16) | (g << 8) | b;
     },
 
-    // radius = physics hitbox radius; numPoints = polygon vertex count
-    _createAsteroid(scene, key, radius, numPoints) {
+    // radiusX, radiusY = ellipse semi-axes; numPoints = polygon vertex count
+    _createAsteroid(scene, key, radiusX, radiusY, numPoints) {
         // Add 5px padding on each side so the polygon doesn't clip the edge
-        const size = radius * 2 + 10;
+        const size = Math.max(radiusX, radiusY) * 2 + 10;
         const cx = size / 2;
         const cy = size / 2;
 
@@ -257,8 +238,10 @@ export const TextureFactory = {
         const points = [];
         for (let i = 0; i < numPoints; i++) {
             const a = (i / numPoints) * Math.PI * 2;
-            const r = radius * (0.7 + Math.random() * 0.3);
-            points.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r });
+            const rVariation = 0.7 + Math.random() * 0.3;
+            const x = radiusX * Math.cos(a) * rVariation;
+            const y = radiusY * Math.sin(a) * rVariation;
+            points.push({ x: cx + x, y: cy + y });
         }
 
         g.beginPath();

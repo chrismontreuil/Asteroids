@@ -9,7 +9,14 @@
       "Bash(cd C:\\\\\\\\Users\\\\\\\\chris.montreuil\\\\\\\\source\\\\\\\\js\\\\\\\\phaser\\\\\\\\Asteroids)",
       "Bash(curl -s http://localhost:5173)",
       "Bash(netstat -ano)",
-      "Bash(pkill -f \"npm run dev\")"
+      "Bash(pkill -f \"npm run dev\")",
+      "Bash(curl -s http://localhost:3010/)",
+      "Bash(wmic process *)",
+      "Bash(curl -s http://localhost:3016)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(awk '{print $2}')",
+      "Bash(xargs kill *)",
+      "Bash(curl -s http://localhost:3018)"
     ]
   }
 }
