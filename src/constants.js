@@ -4,6 +4,10 @@ export const SCREEN_H = 1080;
 export const TEX = {
   SHIP: "ship",
   SHIP_THRUST: "ship-thrust",
+  SHIP_BURST: "ship-burst",
+  SHIP_BURST_THRUST: "ship-burst-thrust",
+  SHIP_WIDE: "ship-wide",
+  SHIP_WIDE_THRUST: "ship-wide-thrust",
   ASTEROID_LG: "asteroid-lg",
   ASTEROID_MD: "asteroid-md",
   ASTEROID_SM: "asteroid-sm",
@@ -52,9 +56,14 @@ export const SHIP_THRUST_FORCE = 400;
 export const SHIP_MAX_SPEED = 300;
 export const SHIP_DRAG = 0.98;
 
-export const MAX_PLAYER_BULLETS = 8;
+export const MAX_PLAYER_BULLETS = 10;
 export const BULLET_SPEED = 500;
 export const BULLET_LIFESPAN = 1200;
+
+export const PICKUP_SPAWN_DELAY = 30000;
+export const PICKUP_LIFETIME = 10000;
+export const BURST_BULLET_COUNT = 5;
+export const BURST_BULLET_DELAY = 50;
 
 export const STARTING_LIVES = 3;
 export const EXTRA_LIFE_SCORE = 10000;

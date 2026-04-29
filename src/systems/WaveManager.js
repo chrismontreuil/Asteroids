@@ -12,6 +12,10 @@ export class WaveManager {
   startWave() {
     this._transitioning = false;
 
+    // Reset pickup abilities when starting new wave
+    this.scene.ship.resetAbilities();
+    this.scene.pickupManager.reset();
+
     const level = this.gameState.level;
     const numRocks = Math.min(16 + level, 33);
     const speedScale = 2 + (level - 1) * 0.1;

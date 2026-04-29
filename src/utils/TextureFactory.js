@@ -5,11 +5,18 @@ export const TextureFactory = {
     createAll(scene) {
         this._createShip(scene);
         this._createShipThrust(scene);
+        this._createShipBurst(scene);
+        this._createShipBurstThrust(scene);
+        this._createShipWide(scene);
+        this._createShipWideThrust(scene);
         this._createAsteroid(scene, TEX.ASTEROID_LG, 40, 12);
         this._createAsteroid(scene, TEX.ASTEROID_MD, 20, 10);
         this._createAsteroid(scene, TEX.ASTEROID_SM, 10, 8);
         this._createBullet(scene);
         this._createParticle(scene);
+        this._createBurstPickup(scene);
+        this._createWidePickup(scene);
+        this._createGreenPickup(scene);
     },
 
     _createShip(scene) {
@@ -37,9 +44,71 @@ export const TextureFactory = {
         g.destroy();
     },
 
+    _createShipBurst(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        this._drawShipBodyTinted(g, 0x0099ff);
+        g.generateTexture('ship-burst', 80, 100);
+        g.destroy();
+    },
+
+    _createShipBurstThrust(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+
+        // Flame drawn before hull so it appears behind
+        g.fillStyle(0xff4400, 0.7);
+        g.fillTriangle(32, 75, 40, 96, 48, 75);
+
+        g.fillStyle(0xffcc00, 0.9);
+        g.fillTriangle(35, 75, 40, 89, 45, 75);
+
+        g.fillStyle(0xffffff, 1);
+        g.fillTriangle(37, 75, 40, 82, 43, 75);
+
+        this._drawShipBodyTinted(g, 0x0099ff);
+        g.generateTexture('ship-burst-thrust', 80, 100);
+        g.destroy();
+    },
+
+    _createShipWide(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        this._drawShipBodyTinted(g, 0xffff00);
+        g.generateTexture('ship-wide', 80, 100);
+        g.destroy();
+    },
+
+    _createShipWideThrust(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+
+        // Flame drawn before hull so it appears behind
+        g.fillStyle(0xff4400, 0.7);
+        g.fillTriangle(32, 75, 40, 96, 48, 75);
+
+        g.fillStyle(0xffcc00, 0.9);
+        g.fillTriangle(35, 75, 40, 89, 45, 75);
+
+        g.fillStyle(0xffffff, 1);
+        g.fillTriangle(37, 75, 40, 82, 43, 75);
+
+        this._drawShipBodyTinted(g, 0xffff00);
+        g.generateTexture('ship-wide-thrust', 80, 100);
+        g.destroy();
+    },
+
     _drawShipBody(g) {
+        this._drawShipBodyFills(g, 0x555555, 0x444444, 0x333333);
+        this._drawShipBodyStrokes(g);
+    },
+
+    _drawShipBodyTinted(g, tint) {
+        // Blend tint with gray fill
+        const blended = this._blendColor(0x555555, tint);
+        this._drawShipBodyFills(g, blended, this._blendColor(0x444444, tint), this._blendColor(0x333333, tint));
+        this._drawShipBodyStrokes(g);
+    },
+
+    _drawShipBodyFills(g, hullColor, wingColor, nozzleColor) {
         // Hull fill
-        g.fillStyle(0x1a1a2e, 1);
+        g.fillStyle(hullColor, 1);
         g.beginPath();
         g.moveTo(40, 6);
         g.lineTo(54, 44);
@@ -50,7 +119,7 @@ export const TextureFactory = {
         g.fillPath();
 
         // Left wing fill
-        g.fillStyle(0x16213e, 1);
+        g.fillStyle(wingColor, 1);
         g.beginPath();
         g.moveTo(26, 44);
         g.lineTo(4,  62);
@@ -69,7 +138,7 @@ export const TextureFactory = {
         g.fillPath();
 
         // Engine nozzle fill
-        g.fillStyle(0x333333, 1);
+        g.fillStyle(nozzleColor, 1);
         g.beginPath();
         g.moveTo(34, 64);
         g.lineTo(46, 64);
@@ -77,7 +146,9 @@ export const TextureFactory = {
         g.lineTo(36, 75);
         g.closePath();
         g.fillPath();
+    },
 
+    _drawShipBodyStrokes(g) {
         // White outlines
         g.lineStyle(1.5, 0xffffff, 1);
 
@@ -157,6 +228,22 @@ export const TextureFactory = {
         g.strokeEllipse(40, 75, 10, 4);
     },
 
+    _blendColor(baseColor, tintColor) {
+        const r1 = (baseColor >> 16) & 0xff;
+        const g1 = (baseColor >> 8) & 0xff;
+        const b1 = baseColor & 0xff;
+
+        const r2 = (tintColor >> 16) & 0xff;
+        const g2 = (tintColor >> 8) & 0xff;
+        const b2 = tintColor & 0xff;
+
+        const r = Math.floor((r1 + r2) / 2);
+        const g = Math.floor((g1 + g2) / 2);
+        const b = Math.floor((b1 + b2) / 2);
+
+        return (r << 16) | (g << 8) | b;
+    },
+
     // radius = physics hitbox radius; numPoints = polygon vertex count
     _createAsteroid(scene, key, radius, numPoints) {
         // Add 5px padding on each side so the polygon doesn't clip the edge
@@ -188,8 +275,10 @@ export const TextureFactory = {
     _createBullet(scene) {
         const g = scene.make.graphics({ x: 0, y: 0, add: false });
         g.fillStyle(0xffffff, 1);
-        g.fillCircle(3, 3, 3);
-        g.generateTexture(TEX.BULLET, 6, 6);
+        g.fillCircle(4, 4, 3);
+        g.lineStyle(1, 0xffffff, 1);
+        g.strokeCircle(4, 4, 3);
+        g.generateTexture(TEX.BULLET, 8, 8);
         g.destroy();
     },
 
@@ -199,5 +288,67 @@ export const TextureFactory = {
         g.fillRect(0, 0, 4, 4);
         g.generateTexture(TEX.PARTICLE, 4, 4);
         g.destroy();
+    },
+
+    _createBurstPickup(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x0099ff, 1);
+        this._fillPentagon(g, 20, 20, 16);
+        g.lineStyle(1.5, 0xffffff, 1);
+        this._strokePentagon(g, 20, 20, 16);
+        g.generateTexture('pickup-burst', 40, 40);
+        g.destroy();
+    },
+
+    _createWidePickup(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0xffff00, 1);
+        this._fillPentagon(g, 20, 20, 16);
+        g.lineStyle(1.5, 0xffffff, 1);
+        this._strokePentagon(g, 20, 20, 16);
+        g.generateTexture('pickup-wide', 40, 40);
+        g.destroy();
+    },
+
+    _createGreenPickup(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x00ff00, 1);
+        this._fillPentagon(g, 20, 20, 16);
+        g.lineStyle(1.5, 0xffffff, 1);
+        this._strokePentagon(g, 20, 20, 16);
+        g.generateTexture('pickup-green', 40, 40);
+        g.destroy();
+    },
+
+    _fillPentagon(g, cx, cy, radius) {
+        g.beginPath();
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+            const x = cx + Math.cos(angle) * radius;
+            const y = cy + Math.sin(angle) * radius;
+            if (i === 0) {
+                g.moveTo(x, y);
+            } else {
+                g.lineTo(x, y);
+            }
+        }
+        g.closePath();
+        g.fillPath();
+    },
+
+    _strokePentagon(g, cx, cy, radius) {
+        g.beginPath();
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+            const x = cx + Math.cos(angle) * radius;
+            const y = cy + Math.sin(angle) * radius;
+            if (i === 0) {
+                g.moveTo(x, y);
+            } else {
+                g.lineTo(x, y);
+            }
+        }
+        g.closePath();
+        g.strokePath();
     },
 };

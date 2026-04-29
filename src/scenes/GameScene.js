@@ -5,6 +5,7 @@ import { InputHandler }     from '../systems/InputHandler.js';
 import { WaveManager }      from '../systems/WaveManager.js';
 import { CollisionManager } from '../systems/CollisionManager.js';
 import { AudioManager }     from '../systems/AudioManager.js';
+import { PickupManager }    from '../systems/PickupManager.js';
 import { WrapBounds }       from '../utils/WrapBounds.js';
 import { createExplosion }  from '../utils/Explosion.js';
 import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS } from '../constants.js';
@@ -23,13 +24,17 @@ export class GameScene extends Phaser.Scene {
         // Physics groups
         this.bullets   = this.physics.add.group();
         this.asteroids = this.physics.add.group();
+        this.pickups   = this.physics.add.group();
 
         // Player ship
         this.ship = new Ship(this, SCREEN_W / 2, SCREEN_H / 2);
 
+        // Pickup manager
+        this.pickupManager = new PickupManager(this);
+
         // Wire collisions
         this.collisionManager = new CollisionManager(this);
-        this.collisionManager.register(this.ship, this.bullets, this.asteroids);
+        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups);
 
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
@@ -86,6 +91,10 @@ export class GameScene extends Phaser.Scene {
             b.update(delta);
         });
 
+        // Wrap pickups
+        const allPickups = [...this.pickups.getChildren()];
+        allPickups.forEach(p => WrapBounds.wrap(this, p));
+
         // Wave logic
         this.waveManager.update(time, delta);
 
@@ -125,6 +134,9 @@ export class GameScene extends Phaser.Scene {
         this.audioManager.playExplosion('large');
         this.audioManager.stopThruster();
         this._thrusterWasOn = false;
+
+        this.ship.resetAbilities();
+        this.pickupManager.reset();
 
         const isGameOver = this.gameState.loseLife();
 

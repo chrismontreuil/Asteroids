@@ -3,7 +3,7 @@ export class CollisionManager {
         this.scene = scene;
     }
 
-    register(ship, bullets, asteroids) {
+    register(ship, bullets, asteroids, pickups) {
         const physics = this.scene.physics;
 
         physics.add.overlap(
@@ -21,6 +21,16 @@ export class CollisionManager {
             this._shipIsVulnerable,
             this,
         );
+
+        if (pickups) {
+            physics.add.overlap(
+                ship,
+                pickups,
+                this._onShipHitsPickup,
+                null,
+                this,
+            );
+        }
     }
 
     _onBulletHitsAsteroid(bullet, asteroid) {
@@ -36,5 +46,10 @@ export class CollisionManager {
 
     _shipIsVulnerable(ship) {
         return !ship.isInvulnerable;
+    }
+
+    _onShipHitsPickup(ship, pickup) {
+        if (!ship.active || !pickup.active) { return; }
+        this.scene.pickupManager.pickup(pickup);
     }
 }

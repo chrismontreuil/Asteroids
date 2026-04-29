@@ -5,6 +5,8 @@ import {
     SHIP_MAX_SPEED,
     MAX_PLAYER_BULLETS,
     INVULNERABILITY_MS,
+    BURST_BULLET_COUNT,
+    BURST_BULLET_DELAY,
 } from '../constants.js';
 import { Bullet } from './Bullet.js';
 
@@ -27,6 +29,13 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
         this.isInvulnerable = false;
         this._invulnTween   = null;
+
+        this.hasBurstFire = false;
+        this._burstActive = false;
+        this._burstCount = 0;
+        this._burstTimer = null;
+
+        this.hasWideFire = false;
     }
 
     update(input) {
@@ -46,10 +55,10 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
                 Math.cos(rad) * SHIP_THRUST_FORCE,
                 Math.sin(rad) * SHIP_THRUST_FORCE,
             );
-            this.setTexture(TEX.SHIP_THRUST);
+            this._setTextureForState(true);
         } else {
             this.body.setAcceleration(0, 0);
-            this.setTexture(TEX.SHIP);
+            this._setTextureForState(false);
         }
 
         // setTexture resets scale — reapply after every swap
@@ -62,15 +71,64 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _tryFire() {
+        if (this.hasWideFire) {
+            this._fireWide();
+            return;
+        }
+
+        if (!this.hasBurstFire) {
+            this._fireOnce();
+            return;
+        }
+
+        if (this._burstActive) { return; }
+
+        this._burstActive = true;
+        this._burstCount = 0;
+        this._fireBurst();
+    }
+
+    _fireWide() {
+        const spreadAngles = [-30, -15, 0, 15, 30];
+        for (const offset of spreadAngles) {
+            const rad = Phaser.Math.DegToRad(this.angle - 90 + offset);
+            this._fireOnceAtAngle(rad, 0xffff00);
+        }
+    }
+
+    _fireBurst() {
+        if (this._burstCount >= BURST_BULLET_COUNT) {
+            this._burstActive = false;
+            return;
+        }
+
+        this._fireOnce();
+        this._burstCount++;
+
+        if (this._burstTimer) {
+            this.scene.time.removeEvent(this._burstTimer);
+        }
+        this._burstTimer = this.scene.time.delayedCall(
+            BURST_BULLET_DELAY,
+            () => this._fireBurst()
+        );
+    }
+
+    _fireOnce() {
+        const rad = Phaser.Math.DegToRad(this.angle - 90);
+        const tint = this.hasBurstFire ? 0x0099ff : 0xffffff;
+        this._fireOnceAtAngle(rad, tint);
+    }
+
+    _fireOnceAtAngle(rad, tint) {
         const bullets = this.scene.bullets.getChildren();
         if (bullets.length >= MAX_PLAYER_BULLETS) { return; }
 
-        // Spawn bullet from the nose (15px forward from hull center, matching new ship size)
-        const rad = Phaser.Math.DegToRad(this.angle - 90);
         const noseX = this.x + Math.cos(rad) * 15;
         const noseY = this.y + Math.sin(rad) * 15;
 
         const bullet = new Bullet(this.scene, noseX, noseY);
+        bullet.setTint(tint);
         this.scene.bullets.add(bullet);
         bullet.launch(rad);
         this.scene.audioManager.playShoot();
@@ -99,5 +157,51 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
                 this._invulnTween = null;
             }
         });
+    }
+
+    _setTextureForState(isThrusting) {
+        if (this.hasWideFire) {
+            this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
+        } else if (this.hasBurstFire) {
+            this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
+        } else {
+            this.setTexture(isThrusting ? TEX.SHIP_THRUST : TEX.SHIP);
+        }
+    }
+
+    enableBurstFire() {
+        if (this.hasWideFire) {
+            // Switch from wide to burst
+            this.hasWideFire = false;
+        }
+        this.hasBurstFire = true;
+        this._setTextureForState(false);
+    }
+
+    enableWideFire() {
+        if (this.hasBurstFire) {
+            // Switch from burst to wide
+            this.hasBurstFire = false;
+            this._burstActive = false;
+            this._burstCount = 0;
+            if (this._burstTimer) {
+                this.scene.time.removeEvent(this._burstTimer);
+                this._burstTimer = null;
+            }
+        }
+        this.hasWideFire = true;
+        this._setTextureForState(false);
+    }
+
+    resetAbilities() {
+        this.hasBurstFire = false;
+        this.hasWideFire = false;
+        this._setTextureForState(false);
+        this._burstActive = false;
+        this._burstCount = 0;
+        if (this._burstTimer) {
+            this.scene.time.removeEvent(this._burstTimer);
+            this._burstTimer = null;
+        }
     }
 }
