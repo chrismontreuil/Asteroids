@@ -1,6 +1,17 @@
+let globalAudioContext = null;
+
+export function initGlobalAudioContext() {
+    if (!globalAudioContext) {
+        globalAudioContext = new AudioContext();
+    }
+    if (globalAudioContext.state === 'suspended') {
+        globalAudioContext.resume();
+    }
+    return globalAudioContext;
+}
+
 export class AudioManager {
     constructor() {
-        this._ctx           = null;
         this._thrusterNodes = null;   // { osc, gain } while thrusting
         this._heartbeatTimer    = 0;
         this._heartbeatPhase    = 0;    // alternates 0/1 for the two-thump pattern
@@ -9,13 +20,13 @@ export class AudioManager {
 
     // Called on first user interaction so the AudioContext is created with user gesture
     _getCtx() {
-        if (!this._ctx) {
-            this._ctx = new AudioContext();
+        if (!globalAudioContext) {
+            globalAudioContext = new AudioContext();
         }
-        if (this._ctx.state === 'suspended') {
-            this._ctx.resume();
+        if (globalAudioContext.state === 'suspended') {
+            globalAudioContext.resume();
         }
-        return this._ctx;
+        return globalAudioContext;
     }
 
     playShoot() {
