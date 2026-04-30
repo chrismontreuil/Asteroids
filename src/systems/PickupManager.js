@@ -3,6 +3,7 @@ import { BurstFirePickup } from '../objects/BurstFirePickup.js';
 import { WideFirePickup } from '../objects/WideFirePickup.js';
 import { GreenPickup } from '../objects/GreenPickup.js';
 import { PurplePickup } from '../objects/PurplePickup.js';
+import { PinkPickup } from '../objects/PinkPickup.js';
 import { Pickup } from '../objects/Pickup.js';
 
 export class PickupManager {
@@ -13,6 +14,7 @@ export class PickupManager {
         this.nextPickupType = 'burst';
         this.widePickupCollected = false;
         this.greenPickupCollected = false;
+        this.purplePickupCollected = false;
 
         this._spawnBurstAndGreen();
     }
@@ -46,6 +48,8 @@ export class PickupManager {
                 newPickup = new GreenPickup(this.scene, x, y, 'pickup-green');
             } else if (this.nextPickupType === 'purple') {
                 newPickup = new PurplePickup(this.scene, x, y, 'pickup-purple');
+            } else if (this.nextPickupType === 'pink') {
+                newPickup = new PinkPickup(this.scene, x, y, 'pickup-pink');
             }
 
             if (newPickup) {
@@ -69,6 +73,9 @@ export class PickupManager {
             this.greenPickupCollected = true;
             this.nextPickupType = 'purple';
         } else if (pickup instanceof PurplePickup) {
+            this.purplePickupCollected = true;
+            this.nextPickupType = 'pink';
+        } else if (pickup instanceof PinkPickup) {
             this.nextPickupType = 'burst';
         }
 
@@ -80,6 +87,7 @@ export class PickupManager {
         this.nextPickupType = 'burst';
         this.widePickupCollected = false;
         this.greenPickupCollected = false;
+        this.purplePickupCollected = false;
         this.spawnedTypes.clear();
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];
