@@ -10,6 +10,8 @@ export const TEX = {
   SHIP_WIDE_THRUST: "ship-wide-thrust",
   SHIP_HEAT: "ship-heat",
   SHIP_HEAT_THRUST: "ship-heat-thrust",
+  SHIP_PURPLE: "ship-purple",
+  SHIP_PURPLE_THRUST: "ship-purple-thrust",
   ASTEROID_GI: "asteroid-gi",
   ASTEROID_LG: "asteroid-lg",
   ASTEROID_MD: "asteroid-md",

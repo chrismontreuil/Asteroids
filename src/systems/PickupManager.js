@@ -2,6 +2,7 @@ import { SCREEN_W, SCREEN_H, PICKUP_SPAWN_DELAY } from '../constants.js';
 import { BurstFirePickup } from '../objects/BurstFirePickup.js';
 import { WideFirePickup } from '../objects/WideFirePickup.js';
 import { GreenPickup } from '../objects/GreenPickup.js';
+import { PurplePickup } from '../objects/PurplePickup.js';
 import { Pickup } from '../objects/Pickup.js';
 
 export class PickupManager {
@@ -11,6 +12,7 @@ export class PickupManager {
         this.spawnedTypes = new Set();
         this.nextPickupType = 'burst';
         this.widePickupCollected = false;
+        this.greenPickupCollected = false;
 
         this._spawnBurstAndGreen();
     }
@@ -42,12 +44,16 @@ export class PickupManager {
                 newPickup = new WideFirePickup(this.scene, x, y, 'pickup-wide');
             } else if (this.nextPickupType === 'green') {
                 newPickup = new GreenPickup(this.scene, x, y, 'pickup-green');
+            } else if (this.nextPickupType === 'purple') {
+                newPickup = new PurplePickup(this.scene, x, y, 'pickup-purple');
             }
 
-            this.pickups.push(newPickup);
-            this.spawnedTypes.add(this.nextPickupType);
-            this.scene.pickups.add(newPickup);
-            newPickup.launch();
+            if (newPickup) {
+                this.pickups.push(newPickup);
+                this.spawnedTypes.add(this.nextPickupType);
+                this.scene.pickups.add(newPickup);
+                newPickup.launch();
+            }
         }
     }
 
@@ -59,6 +65,11 @@ export class PickupManager {
             this.nextPickupType = 'green';
         } else if (pickup instanceof BurstFirePickup) {
             this.nextPickupType = 'wide';
+        } else if (pickup instanceof GreenPickup) {
+            this.greenPickupCollected = true;
+            this.nextPickupType = 'purple';
+        } else if (pickup instanceof PurplePickup) {
+            this.nextPickupType = 'burst';
         }
 
         pickup.destroy();
@@ -68,6 +79,7 @@ export class PickupManager {
     reset() {
         this.nextPickupType = 'burst';
         this.widePickupCollected = false;
+        this.greenPickupCollected = false;
         this.spawnedTypes.clear();
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];

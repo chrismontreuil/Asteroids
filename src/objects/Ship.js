@@ -39,6 +39,8 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.hasWideFire = false;
 
         this.hasHeatSeek = false;
+
+        this.hasPurpleExplosion = false;
     }
 
     update(input) {
@@ -74,6 +76,11 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _tryFire() {
+        if (this.hasPurpleExplosion) {
+            this._firePurpleExplosion();
+            return;
+        }
+
         if (this.hasWideFire) {
             this._fireWide();
             return;
@@ -123,6 +130,48 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             this.scene.bullets.add(bullet);
             bullet.launch(rad, 400);
         }
+
+        this.scene.audioManager.playShoot();
+    }
+
+    _firePurpleExplosion() {
+        const asteroids = this.scene.asteroids.getChildren();
+        const maxRadius = 300;
+        const asteroidsToDestroy = [];
+
+        for (const asteroid of asteroids) {
+            if (!asteroid.active) continue;
+
+            const dx = asteroid.x - this.x;
+            const dy = asteroid.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= maxRadius) {
+                asteroidsToDestroy.push(asteroid);
+            }
+        }
+
+        for (const asteroid of asteroidsToDestroy) {
+            this.scene.splitAsteroid(asteroid);
+        }
+
+        const g = this.scene.make.graphics({ x: this.x, y: this.y, add: true });
+        const radiusObj = { r: 0 };
+
+        this.scene.tweens.add({
+            targets: radiusObj,
+            r: maxRadius,
+            duration: 300,
+            ease: 'Quad.easeOut',
+            onUpdate: () => {
+                g.clear();
+                g.lineStyle(2, 0x9900ff, 1);
+                g.strokeCircle(0, 0, radiusObj.r);
+            },
+            onComplete: () => {
+                g.destroy();
+            },
+        });
 
         this.scene.audioManager.playShoot();
     }
@@ -216,7 +265,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _setTextureForState(isThrusting) {
-        if (this.hasWideFire) {
+        if (this.hasPurpleExplosion) {
+            this.setTexture(isThrusting ? TEX.SHIP_PURPLE_THRUST : TEX.SHIP_PURPLE);
+        } else if (this.hasWideFire) {
             this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
         } else if (this.hasBurstFire) {
             this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
@@ -269,7 +320,31 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         if (this.hasWideFire) {
             this.hasWideFire = false;
         }
+        if (this.hasPurpleExplosion) {
+            this.hasPurpleExplosion = false;
+        }
         this.hasHeatSeek = true;
+        this._setTextureForState(false);
+    }
+
+    enablePurpleExplosion() {
+        // Disable other fire modes
+        if (this.hasBurstFire) {
+            this.hasBurstFire = false;
+            this._burstActive = false;
+            this._burstCount = 0;
+            if (this._burstTimer) {
+                this.scene.time.removeEvent(this._burstTimer);
+                this._burstTimer = null;
+            }
+        }
+        if (this.hasWideFire) {
+            this.hasWideFire = false;
+        }
+        if (this.hasHeatSeek) {
+            this.hasHeatSeek = false;
+        }
+        this.hasPurpleExplosion = true;
         this._setTextureForState(false);
     }
 
@@ -277,6 +352,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.hasBurstFire = false;
         this.hasWideFire = false;
         this.hasHeatSeek = false;
+        this.hasPurpleExplosion = false;
         this._setTextureForState(false);
         this._burstActive = false;
         this._burstCount = 0;

@@ -11,6 +11,8 @@ export const TextureFactory = {
         this._createShipWideThrust(scene);
         this._createShipHeat(scene);
         this._createShipHeatThrust(scene);
+        this._createShipPurple(scene);
+        this._createShipPurpleThrust(scene);
         for (let i = 0; i < 4; i++) {
             this._createAsteroid(scene, `${TEX.ASTEROID_GI}-${i}`, 200, 140, 32);
             this._createAsteroid(scene, `${TEX.ASTEROID_LG}-${i}`, 40, 28, 24);
@@ -22,6 +24,7 @@ export const TextureFactory = {
         this._createBurstPickup(scene);
         this._createWidePickup(scene);
         this._createGreenPickup(scene);
+        this._createPurplePickup(scene);
     },
 
     _createShip(scene) {
@@ -121,6 +124,31 @@ export const TextureFactory = {
 
         this._drawShipBodyTinted(g, 0x00ff00);
         g.generateTexture(TEX.SHIP_HEAT_THRUST, 80, 100);
+        g.destroy();
+    },
+
+    _createShipPurple(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        this._drawShipBodyTinted(g, 0x9900ff);
+        g.generateTexture(TEX.SHIP_PURPLE, 80, 100);
+        g.destroy();
+    },
+
+    _createShipPurpleThrust(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+
+        // Flame drawn before hull so it appears behind
+        g.fillStyle(0xff4400, 0.7);
+        g.fillTriangle(32, 75, 40, 96, 48, 75);
+
+        g.fillStyle(0xffcc00, 0.9);
+        g.fillTriangle(35, 75, 40, 89, 45, 75);
+
+        g.fillStyle(0xffffff, 1);
+        g.fillTriangle(37, 75, 40, 82, 43, 75);
+
+        this._drawShipBodyTinted(g, 0x9900ff);
+        g.generateTexture(TEX.SHIP_PURPLE_THRUST, 80, 100);
         g.destroy();
     },
 
@@ -311,6 +339,16 @@ export const TextureFactory = {
         g.lineStyle(1.5, 0xffffff, 1);
         this._strokePentagon(g, 20, 20, 16);
         g.generateTexture('pickup-green', 40, 40);
+        g.destroy();
+    },
+
+    _createPurplePickup(scene) {
+        const g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x9900ff, 1);
+        this._fillPentagon(g, 20, 20, 16);
+        g.lineStyle(1.5, 0xffffff, 1);
+        this._strokePentagon(g, 20, 20, 16);
+        g.generateTexture('pickup-purple', 40, 40);
         g.destroy();
     },
 
