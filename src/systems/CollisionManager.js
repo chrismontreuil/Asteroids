@@ -22,6 +22,7 @@ export class CollisionManager {
             this,
         );
 
+
         if (pickups) {
             physics.add.overlap(
                 ship,

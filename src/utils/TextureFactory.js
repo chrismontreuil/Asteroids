@@ -233,7 +233,6 @@ export const TextureFactory = {
         const cy = size / 2;
 
         const g = scene.make.graphics({ x: 0, y: 0, add: false });
-        g.lineStyle(2, 0xffffff, 1);
 
         const points = [];
         for (let i = 0; i < numPoints; i++) {
@@ -244,6 +243,16 @@ export const TextureFactory = {
             points.push({ x: cx + x, y: cy + y });
         }
 
+        g.fillStyle(0x1a1a1a, 1);
+        g.beginPath();
+        g.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            g.lineTo(points[i].x, points[i].y);
+        }
+        g.closePath();
+        g.fillPath();
+
+        g.lineStyle(2, 0xffffff, 1);
         g.beginPath();
         g.moveTo(points[0].x, points[0].y);
         for (let i = 1; i < points.length; i++) {
@@ -251,6 +260,7 @@ export const TextureFactory = {
         }
         g.closePath();
         g.strokePath();
+
         g.generateTexture(key, size, size);
         g.destroy();
     },

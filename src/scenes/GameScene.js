@@ -85,6 +85,35 @@ export class GameScene extends Phaser.Scene {
         const allAsteroids = [...this.asteroids.getChildren()];
         allAsteroids.forEach(a => WrapBounds.wrap(this, a));
 
+        // Asteroid-to-asteroid collisions
+        for (let i = 0; i < allAsteroids.length; i++) {
+            for (let j = i + 1; j < allAsteroids.length; j++) {
+                const a1 = allAsteroids[i];
+                const a2 = allAsteroids[j];
+                const dx = a2.body.x - a1.body.x;
+                const dy = a2.body.y - a1.body.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const minDist = (a1.body.radius || 20) + (a2.body.radius || 20);
+
+                if (dist < minDist && dist > 0) {
+                    const nx = dx / dist;
+                    const ny = dy / dist;
+
+                    const dvx = a2.body.velocity.x - a1.body.velocity.x;
+                    const dvy = a2.body.velocity.y - a1.body.velocity.y;
+                    const dvn = dvx * nx + dvy * ny;
+
+                    if (dvn < 0) {
+                        const impulse = dvn / 2;
+                        a1.body.velocity.x += impulse * nx;
+                        a1.body.velocity.y += impulse * ny;
+                        a2.body.velocity.x -= impulse * nx;
+                        a2.body.velocity.y -= impulse * ny;
+                    }
+                }
+            }
+        }
+
         const allBullets = [...this.bullets.getChildren()];
         allBullets.forEach(b => {
             WrapBounds.wrap(this, b);
