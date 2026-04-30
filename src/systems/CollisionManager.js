@@ -3,7 +3,7 @@ export class CollisionManager {
         this.scene = scene;
     }
 
-    register(ship, bullets, asteroids, pickups, saucers, saucerBullets) {
+    register(ship, bullets, asteroids, pickups, saucers, saucerBullets, octopuses, tentacles) {
         const physics = this.scene.physics;
 
         physics.add.overlap(
@@ -68,6 +68,26 @@ export class CollisionManager {
                 this,
             );
         }
+
+        if (octopuses) {
+            physics.add.overlap(
+                ship,
+                octopuses,
+                this._onShipHitsOctopus,
+                this._shipIsVulnerable,
+                this,
+            );
+        }
+
+        if (tentacles) {
+            physics.add.overlap(
+                bullets,
+                tentacles,
+                this._onBulletHitsTentacle,
+                null,
+                this,
+            );
+        }
     }
 
     _onBulletHitsAsteroid(bullet, asteroid) {
@@ -118,6 +138,31 @@ export class CollisionManager {
         if (!ship.active || !saucer.active) { return; }
         saucer.setActive(false);
         this.scene.killSaucer(saucer);
+        this.scene.killShip();
+    }
+
+    _onBulletHitsTentacle(bullet, tentacle) {
+        if (!bullet.active || !tentacle.active) { return; }
+
+        const octopus = tentacle.octopus;
+        bullet.setActive(false);
+
+        if (tentacle.isBodyCollider) {
+            this.scene.killOctopus(octopus);
+        } else {
+            const tentacleIndex = tentacle.tentacleIndex;
+            const tentacleWasShot = octopus.shootTentacle(tentacleIndex);
+
+            if (tentacleWasShot) {
+                this.scene.damageOctopusTentacle(octopus);
+            }
+        }
+    }
+
+    _onShipHitsOctopus(ship, octopus) {
+        if (!ship.active || !octopus.active) { return; }
+        octopus.setActive(false);
+        this.scene.killOctopus(octopus);
         this.scene.killShip();
     }
 }

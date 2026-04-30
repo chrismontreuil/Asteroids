@@ -1,6 +1,7 @@
 import { Ship }             from '../objects/Ship.js';
 import { Asteroid }         from '../objects/Asteroid.js';
 import { Saucer }           from '../objects/Saucer.js';
+import { Octopus }          from '../objects/Octopus.js';
 import { GameState }        from '../systems/GameState.js';
 import { InputHandler }     from '../systems/InputHandler.js';
 import { WaveManager }      from '../systems/WaveManager.js';
@@ -9,7 +10,7 @@ import { AudioManager }     from '../systems/AudioManager.js';
 import { PickupManager }    from '../systems/PickupManager.js';
 import { WrapBounds }       from '../utils/WrapBounds.js';
 import { createExplosion }  from '../utils/Explosion.js';
-import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE } from '../constants.js';
+import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE, OCTOPUS_BODY_SCORE, OCTOPUS_TENTACLE_SCORE } from '../constants.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -28,6 +29,8 @@ export class GameScene extends Phaser.Scene {
         this.pickups        = this.physics.add.group();
         this.saucers        = this.physics.add.group();
         this.saucerBullets  = this.physics.add.group();
+        this.octopuses      = this.physics.add.group();
+        this.tentacles      = this.physics.add.group();
 
         // Player ship
         this.ship = new Ship(this, SCREEN_W / 2, SCREEN_H / 2);
@@ -37,7 +40,7 @@ export class GameScene extends Phaser.Scene {
 
         // Wire collisions
         this.collisionManager = new CollisionManager(this);
-        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets);
+        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets, this.octopuses, this.tentacles);
 
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
@@ -140,6 +143,10 @@ export class GameScene extends Phaser.Scene {
         // Update saucers
         const allSaucers = [...this.saucers.getChildren()];
         allSaucers.forEach(s => s.update(delta));
+
+        // Update octopuses
+        const allOctopuses = [...this.octopuses.getChildren()];
+        allOctopuses.forEach(o => o.update(delta));
 
         // Wave logic
         this.waveManager.update(time, delta);
@@ -283,6 +290,23 @@ export class GameScene extends Phaser.Scene {
         this._saucerRespawnTimer = this.time.delayedCall(SAUCER_RESPAWN_DELAY, () => {
             this._spawnSaucer();
         });
+    }
+
+    damageOctopusTentacle(octopus) {
+        this.gameState.addScore(OCTOPUS_TENTACLE_SCORE);
+        this.audioManager.playExplosion('small');
+    }
+
+    killOctopus(octopus) {
+        this.gameState.addScore(OCTOPUS_BODY_SCORE);
+        createExplosion(this, octopus.x, octopus.y, 20);
+        this.audioManager.playExplosion('large');
+        octopus.die();
+    }
+
+    resetOctopuses() {
+        const octopuses = [...this.octopuses.getChildren()];
+        octopuses.forEach(o => o.die());
     }
 
     resetSaucer() {

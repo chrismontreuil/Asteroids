@@ -72,6 +72,7 @@ export const TextureFactory = {
     this._createBullet(scene);
     this._createParticle(scene);
     this._createSaucer(scene);
+    this._createOctopus(scene);
     this._createBurstPickup(scene);
     this._createWidePickup(scene);
     this._createGreenPickup(scene);
@@ -402,6 +403,39 @@ export const TextureFactory = {
     g.strokeEllipse(30, 20, 28, 16);
     g.lineBetween(16, 22, 44, 22);
     g.generateTexture(TEX.SAUCER, 60, 40);
+    g.destroy();
+  },
+
+  _createOctopus(scene) {
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const centerX = 35;
+    const centerY = 35;
+
+    g.fillStyle(0xff6699, 1);
+    g.fillCircle(centerX, centerY, 12);
+
+    g.lineStyle(2, 0xffffff, 1);
+    g.strokeCircle(centerX, centerY, 12);
+
+    const tentacleRadius = 22;
+    const tentacleLength = 16;
+    const tentacleWidth = 3;
+
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      const tx = centerX + Math.cos(angle) * tentacleRadius;
+      const ty = centerY + Math.sin(angle) * tentacleRadius;
+
+      g.fillStyle(0xff6699, 1);
+      g.fillCircle(tx, ty, 4);
+      g.lineStyle(2, 0xffffff, 1);
+      g.strokeCircle(tx, ty, 4);
+
+      g.lineStyle(tentacleWidth, 0xff99cc, 1);
+      g.lineBetween(centerX, centerY, tx, ty);
+    }
+
+    g.generateTexture(TEX.OCTOPUS, 70, 70);
     g.destroy();
   },
 

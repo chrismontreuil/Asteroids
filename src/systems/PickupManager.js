@@ -15,6 +15,7 @@ export class PickupManager {
         this.widePickupCollected = false;
         this.greenPickupCollected = false;
         this.purplePickupCollected = false;
+        this.pickupCooldowns = new Map();
 
         this._spawnBurstAndGreen();
     }
@@ -62,8 +63,18 @@ export class PickupManager {
     }
 
     pickup(pickup) {
+        const now = Date.now();
+        const cooldownMs = 300;
+        const lastCollect = this.pickupCooldowns.get(pickup) || 0;
+
+        if (now - lastCollect < cooldownMs) {
+            return;
+        }
+
         pickup.onPickup(this.scene.ship);
         this.scene.gameState.addScore(1000);
+        this.pickupCooldowns.set(pickup, now);
+
         if (pickup instanceof WideFirePickup) {
             this.widePickupCollected = true;
             this.nextPickupType = 'green';
@@ -79,7 +90,6 @@ export class PickupManager {
             this.nextPickupType = 'burst';
         }
 
-        pickup.destroy();
         this.spawnNext();
     }
 
@@ -89,6 +99,7 @@ export class PickupManager {
         this.greenPickupCollected = false;
         this.purplePickupCollected = false;
         this.spawnedTypes.clear();
+        this.pickupCooldowns.clear();
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];
         this._spawnBurstAndGreen();

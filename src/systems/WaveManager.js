@@ -1,4 +1,5 @@
 import { Asteroid } from "../objects/Asteroid.js";
+import { Octopus } from "../objects/Octopus.js";
 
 export class WaveManager {
   constructor(scene, gameState) {
@@ -16,6 +17,7 @@ export class WaveManager {
     this.scene.ship.resetAbilities();
     this.scene.pickupManager.reset();
     this.scene.resetSaucer();
+    this.scene.resetOctopuses();
 
     const level = this.gameState.level;
     const numRocks = Math.min(16 + level, 33);
@@ -35,6 +37,16 @@ export class WaveManager {
       const asteroid = new Asteroid(this.scene, pos.x, pos.y, "large");
       this.scene.asteroids.add(asteroid);
       asteroid.launch(speedScale);
+    }
+
+    // Spawn octopuses starting from level 2
+    if (level >= 2) {
+      const numOctopuses = 1 + Math.floor((level - 1) / 2);
+      for (let i = 0; i < numOctopuses; i++) {
+        const pos = this._randomCenterPosition();
+        const octopus = new Octopus(this.scene, pos.x, pos.y);
+        this.scene.octopuses.add(octopus);
+      }
     }
 
     // Show wave label on all waves after the first
@@ -75,5 +87,15 @@ export class WaveManager {
       return { x: 0, y: Phaser.Math.Between(0, h) };
     }
     return { x: w, y: Phaser.Math.Between(0, h) };
+  }
+
+  _randomCenterPosition() {
+    const w = this.scene.scale.width;
+    const h = this.scene.scale.height;
+    const margin = 150;
+    return {
+      x: Phaser.Math.Between(margin, w - margin),
+      y: Phaser.Math.Between(margin, h - margin),
+    };
   }
 }

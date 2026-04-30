@@ -21,6 +21,7 @@ export const TEX = {
   BULLET: "bullet",
   PARTICLE: "particle",
   SAUCER: "saucer",
+  OCTOPUS: "octopus",
 };
 
 export const SCORE = {
@@ -99,3 +100,9 @@ export const SAUCER_FIRE_INTERVAL = 2500;
 export const SAUCER_RESPAWN_DELAY = 15000;
 export const SAUCER_SPAWN_DELAY = 10000;
 export const SAUCER_SCORE = 500;
+
+export const OCTOPUS_SPEED = 0;
+export const OCTOPUS_FIRE_INTERVAL = 3000;
+export const OCTOPUS_TENTACLE_REGROW_DELAY = 5000;
+export const OCTOPUS_BODY_SCORE = 1000;
+export const OCTOPUS_TENTACLE_SCORE = 500;
