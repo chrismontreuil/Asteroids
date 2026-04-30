@@ -150,4 +150,34 @@ export class AudioManager {
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.07);
     }
+
+    playPickup(pitchMultiplier = 1) {
+        const ctx = this._getCtx();
+        // C, C, G (down), B, C, G, C, E
+        const baseNotes = [262, 262, 196, 247, 262, 392, 523, 659];
+        const notes = baseNotes.map(n => n * pitchMultiplier);
+        const noteDuration = 0.06;
+        const noteGap = 0.02;
+        const now = ctx.currentTime;
+
+        notes.forEach((freq, i) => {
+            const startTime = now + i * (noteDuration + noteGap);
+            const endTime = startTime + noteDuration;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.35, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, endTime);
+
+            osc.start(startTime);
+            osc.stop(endTime);
+        });
+    }
 }

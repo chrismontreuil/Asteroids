@@ -16,6 +16,8 @@ export class PickupManager {
         this.greenPickupCollected = false;
         this.purplePickupCollected = false;
         this.pickupCooldowns = new Map();
+        this.lastSoundTime = 0;
+        this.soundCooldownMs = 1000;
 
         this._spawnBurstAndGreen();
     }
@@ -75,19 +77,30 @@ export class PickupManager {
         this.scene.gameState.addScore(1000);
         this.pickupCooldowns.set(pickup, now);
 
-        if (pickup instanceof WideFirePickup) {
+        let pitchMultiplier = 1;
+        if (pickup instanceof BurstFirePickup) {
+            pitchMultiplier = 0.5; // blue - lowest
+            this.nextPickupType = 'wide';
+        } else if (pickup instanceof WideFirePickup) {
+            pitchMultiplier = 1.0; // yellow
             this.widePickupCollected = true;
             this.nextPickupType = 'green';
-        } else if (pickup instanceof BurstFirePickup) {
-            this.nextPickupType = 'wide';
         } else if (pickup instanceof GreenPickup) {
+            pitchMultiplier = 1.26; // green
             this.greenPickupCollected = true;
             this.nextPickupType = 'purple';
         } else if (pickup instanceof PurplePickup) {
+            pitchMultiplier = 1.5; // purple
             this.purplePickupCollected = true;
             this.nextPickupType = 'pink';
         } else if (pickup instanceof PinkPickup) {
+            pitchMultiplier = 2.0; // pink - highest
             this.nextPickupType = 'burst';
+        }
+
+        if (now - this.lastSoundTime >= this.soundCooldownMs) {
+            this.scene.audioManager.playPickup(pitchMultiplier);
+            this.lastSoundTime = now;
         }
 
         this.spawnNext();

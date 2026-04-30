@@ -4,6 +4,8 @@ Write code that is easy to read by a human and easy to debug. Separate code on l
 Don't push to git. I will handle that.
 Always allow bash and reading from tasks/.
 
+This is a variation on the classic arcade game asteroids.
+
 when player gets a pickup, it  
  shouldn't go away. so after  
  spawn, there should be blue,  
