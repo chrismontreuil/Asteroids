@@ -12,6 +12,7 @@ export const TextureFactory = {
         this._createShipHeat(scene);
         this._createShipHeatThrust(scene);
         for (let i = 0; i < 4; i++) {
+            this._createAsteroid(scene, `${TEX.ASTEROID_GI}-${i}`, 200, 140, 32);
             this._createAsteroid(scene, `${TEX.ASTEROID_LG}-${i}`, 40, 28, 24);
             this._createAsteroid(scene, `${TEX.ASTEROID_MD}-${i}`, 20, 14, 18);
             this._createAsteroid(scene, `${TEX.ASTEROID_SM}-${i}`, 10, 7, 14);

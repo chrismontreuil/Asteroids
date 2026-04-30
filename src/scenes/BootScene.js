@@ -10,3 +10,9 @@ export class BootScene extends Phaser.Scene {
         this.scene.start('MenuScene');
     }
 }
+
+if ('caches' in window) {
+    caches.keys().then(names => {
+        Promise.all(names.map(name => caches.delete(name)));
+    });
+}

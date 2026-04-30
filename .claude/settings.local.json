@@ -16,7 +16,9 @@
       "Bash(pkill -f \"vite\")",
       "Bash(awk '{print $2}')",
       "Bash(xargs kill *)",
-      "Bash(curl -s http://localhost:3018)"
+      "Bash(curl -s http://localhost:3018)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(node -e ' *)"
     ]
   }
 }

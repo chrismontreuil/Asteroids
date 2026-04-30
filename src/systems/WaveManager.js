@@ -20,6 +20,15 @@ export class WaveManager {
     const numRocks = Math.min(16 + level, 33);
     const speedScale = 2 + (level - 1) * 0.1;
 
+    // Spawn 3 giant asteroids
+    for (let i = 0; i < 3; i++) {
+      const pos = this._edgePosition();
+      const asteroid = new Asteroid(this.scene, pos.x, pos.y, "giant");
+      this.scene.asteroids.add(asteroid);
+      asteroid.launch(speedScale);
+    }
+
+    // Spawn regular large asteroids
     for (let i = 0; i < numRocks; i++) {
       const pos = this._edgePosition();
       const asteroid = new Asteroid(this.scene, pos.x, pos.y, "large");

@@ -10,6 +10,7 @@ export const TEX = {
   SHIP_WIDE_THRUST: "ship-wide-thrust",
   SHIP_HEAT: "ship-heat",
   SHIP_HEAT_THRUST: "ship-heat-thrust",
+  ASTEROID_GI: "asteroid-gi",
   ASTEROID_LG: "asteroid-lg",
   ASTEROID_MD: "asteroid-md",
   ASTEROID_SM: "asteroid-sm",
@@ -26,6 +27,7 @@ export const SCORE = {
 export const getAsteroidTexture = (size) => {
   const variation = Math.floor(Math.random() * 4);
   const baseTexes = {
+    giant: TEX.ASTEROID_GI,
     large: TEX.ASTEROID_LG,
     medium: TEX.ASTEROID_MD,
     small: TEX.ASTEROID_SM,
@@ -34,30 +36,35 @@ export const getAsteroidTexture = (size) => {
 };
 
 export const SIZE_TO_RADIUS_X = {
+  giant: 200,
   large: 40,
   medium: 20,
   small: 10,
 };
 
 export const SIZE_TO_RADIUS_Y = {
+  giant: 140,
   large: 28,
   medium: 14,
   small: 7,
 };
 
 export const SIZE_TO_SPEED = {
+  giant: 60,
   large: 90,
   medium: 150,
   small: 240,
 };
 
 export const SPLITS_INTO = {
+  giant: "large",
   large: "medium",
   medium: "small",
   small: null,
 };
 
 export const SCORE_FOR_SIZE = {
+  giant: 10,
   large: SCORE.ASTEROID_LARGE,
   medium: SCORE.ASTEROID_MEDIUM,
   small: SCORE.ASTEROID_SMALL,

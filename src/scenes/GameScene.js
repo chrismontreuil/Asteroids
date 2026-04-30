@@ -145,6 +145,28 @@ export class GameScene extends Phaser.Scene {
 
         asteroid.destroy();
 
+        if (size === 'giant') {
+            for (let i = 0; i < 5; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 80 + Math.random() * 40;
+                const offsetX = Math.cos(angle) * distance;
+                const offsetY = Math.sin(angle) * distance;
+                const child = new Asteroid(this, pos.x + offsetX, pos.y + offsetY, 'large');
+                this.asteroids.add(child);
+                child.launch();
+            }
+            for (let i = 0; i < 10; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 80 + Math.random() * 40;
+                const offsetX = Math.cos(angle) * distance;
+                const offsetY = Math.sin(angle) * distance;
+                const child = new Asteroid(this, pos.x + offsetX, pos.y + offsetY, 'medium');
+                this.asteroids.add(child);
+                child.launch();
+            }
+            return;
+        }
+
         const childSize = SPLITS_INTO[size];
         if (childSize !== null) {
             const child1 = new Asteroid(this, pos.x, pos.y, childSize);
