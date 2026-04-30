@@ -19,7 +19,8 @@
       "Bash(curl -s http://localhost:3018)",
       "Bash(curl -s http://localhost:5173/)",
       "Bash(node -e ' *)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(timeout 15 tail -f C:\\\\Users\\\\CHRIS~1.MON\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-chris-montreuil-source-js-phaser-Asteroids\\\\5c2f23d2-918d-41a4-8012-9bfcc78b908b\\\\tasks\\\\b3nhbo17t.output)"
     ]
   }
 }
