@@ -16,10 +16,10 @@ export const TextureFactory = {
     this._createShipPinkThrust(scene);
     for (let i = 0; i < 4; i++) {
       const giRadii = [
-        { x: 220, y: 100 },
-        { x: 200, y: 110 },
-        { x: 190, y: 95 },
-        { x: 210, y: 85 },
+        { x: 220, y: 180 },
+        { x: 200, y: 170 },
+        { x: 190, y: 155 },
+        { x: 210, y: 165 },
       ];
       const lgRadii = [
         { x: 40, y: 30 },

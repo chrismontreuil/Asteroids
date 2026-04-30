@@ -48,7 +48,7 @@ export const SIZE_TO_RADIUS_X = {
 };
 
 export const SIZE_TO_RADIUS_Y = {
-  giant: 160,
+  giant: 180,
   large: 28,
   medium: 14,
   small: 7,
