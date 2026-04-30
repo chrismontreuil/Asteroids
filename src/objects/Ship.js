@@ -335,6 +335,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         if (this.hasHeatSeek) {
             this.hasHeatSeek = false;
         }
+        if (this.hasPurpleExplosion) {
+            this.hasPurpleExplosion = false;
+        }
+        if (this.hasPinkExplosion) {
+            this.hasPinkExplosion = false;
+        }
         this.hasBurstFire = true;
         this._setTextureForState(false);
     }
@@ -351,6 +357,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         }
         if (this.hasHeatSeek) {
             this.hasHeatSeek = false;
+        }
+        if (this.hasPurpleExplosion) {
+            this.hasPurpleExplosion = false;
+        }
+        if (this.hasPinkExplosion) {
+            this.hasPinkExplosion = false;
         }
         this.hasWideFire = true;
         this._setTextureForState(false);
@@ -372,6 +384,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         }
         if (this.hasPurpleExplosion) {
             this.hasPurpleExplosion = false;
+        }
+        if (this.hasPinkExplosion) {
+            this.hasPinkExplosion = false;
         }
         this.hasHeatSeek = true;
         this._setTextureForState(false);
