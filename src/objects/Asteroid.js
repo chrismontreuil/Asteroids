@@ -14,8 +14,8 @@ export class Asteroid extends Phaser.Physics.Arcade.Sprite {
 
         const radiusX = SIZE_TO_RADIUS_X[size];
         const radiusY = SIZE_TO_RADIUS_Y[size];
-        const avgRadius = (radiusX + radiusY) / 2;
-        this.body.setCircle(avgRadius, HITBOX_OFFSET, HITBOX_OFFSET);
+        const collisionRadius = Math.min(radiusX, radiusY);
+        this.body.setCircle(collisionRadius, HITBOX_OFFSET, HITBOX_OFFSET);
         this.body.setCollideWorldBounds(false);
         this.body.onWorldBounds = false;
         this.body.setDrag(0, 0);

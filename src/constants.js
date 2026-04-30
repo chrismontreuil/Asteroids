@@ -20,6 +20,7 @@ export const TEX = {
   ASTEROID_SM: "asteroid-sm",
   BULLET: "bullet",
   PARTICLE: "particle",
+  SAUCER: "saucer",
 };
 
 export const SCORE = {
@@ -40,14 +41,14 @@ export const getAsteroidTexture = (size) => {
 };
 
 export const SIZE_TO_RADIUS_X = {
-  giant: 200,
+  giant: 190,
   large: 40,
   medium: 20,
   small: 10,
 };
 
 export const SIZE_TO_RADIUS_Y = {
-  giant: 140,
+  giant: 160,
   large: 28,
   medium: 14,
   small: 7,
@@ -91,3 +92,10 @@ export const BURST_BULLET_DELAY = 50;
 export const STARTING_LIVES = 3;
 export const EXTRA_LIFE_SCORE = 10000;
 export const INVULNERABILITY_MS = 3000;
+
+export const SAUCER_SPEED = 160;
+export const SAUCER_AVOID_RADIUS = 220;
+export const SAUCER_FIRE_INTERVAL = 2500;
+export const SAUCER_RESPAWN_DELAY = 15000;
+export const SAUCER_SPAWN_DELAY = 10000;
+export const SAUCER_SCORE = 500;

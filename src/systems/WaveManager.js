@@ -15,6 +15,7 @@ export class WaveManager {
     // Reset pickup abilities when starting new wave
     this.scene.ship.resetAbilities();
     this.scene.pickupManager.reset();
+    this.scene.resetSaucer();
 
     const level = this.gameState.level;
     const numRocks = Math.min(16 + level, 33);

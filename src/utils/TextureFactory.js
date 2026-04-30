@@ -71,6 +71,7 @@ export const TextureFactory = {
     }
     this._createBullet(scene);
     this._createParticle(scene);
+    this._createSaucer(scene);
     this._createBurstPickup(scene);
     this._createWidePickup(scene);
     this._createGreenPickup(scene);
@@ -388,6 +389,19 @@ export const TextureFactory = {
     g.fillStyle(0xffffff, 1);
     g.fillRect(0, 0, 4, 4);
     g.generateTexture(TEX.PARTICLE, 4, 4);
+    g.destroy();
+  },
+
+  _createSaucer(scene) {
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0x660000, 1);
+    g.fillEllipse(30, 28, 56, 14);
+    g.fillEllipse(30, 20, 28, 16);
+    g.lineStyle(2, 0xffffff, 1);
+    g.strokeEllipse(30, 28, 56, 14);
+    g.strokeEllipse(30, 20, 28, 16);
+    g.lineBetween(16, 22, 44, 22);
+    g.generateTexture(TEX.SAUCER, 60, 40);
     g.destroy();
   },
 

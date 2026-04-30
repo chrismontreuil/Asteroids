@@ -3,7 +3,7 @@ export class CollisionManager {
         this.scene = scene;
     }
 
-    register(ship, bullets, asteroids, pickups) {
+    register(ship, bullets, asteroids, pickups, saucers, saucerBullets) {
         const physics = this.scene.physics;
 
         physics.add.overlap(
@@ -32,11 +32,47 @@ export class CollisionManager {
                 this,
             );
         }
+
+        if (saucers) {
+            physics.add.overlap(
+                bullets,
+                saucers,
+                this._onBulletHitsSaucer,
+                null,
+                this,
+            );
+
+            physics.add.overlap(
+                saucers,
+                asteroids,
+                this._onSaucerHitsAsteroid,
+                null,
+                this,
+            );
+
+            physics.add.overlap(
+                ship,
+                saucers,
+                this._onShipHitsSaucer,
+                this._shipIsVulnerable,
+                this,
+            );
+        }
+
+        if (saucerBullets) {
+            physics.add.overlap(
+                saucerBullets,
+                ship,
+                this._onSaucerBulletHitsShip,
+                this._shipIsVulnerable,
+                this,
+            );
+        }
     }
 
     _onBulletHitsAsteroid(bullet, asteroid) {
         if (!bullet.active || !asteroid.active) { return; }
-        bullet.destroy();
+        bullet.setActive(false);
         this.scene.splitAsteroid(asteroid);
     }
 
@@ -52,5 +88,36 @@ export class CollisionManager {
     _onShipHitsPickup(ship, pickup) {
         if (!ship.active || !pickup.active) { return; }
         this.scene.pickupManager.pickup(pickup);
+    }
+
+    _onBulletHitsSaucer(bullet, saucer) {
+        if (!bullet.active || !saucer.active) { return; }
+        bullet.setActive(false);
+        if (saucer.active) {
+            this.scene.killSaucer(saucer);
+        }
+    }
+
+    _onSaucerBulletHitsShip(saucerBullet, ship) {
+        if (!saucerBullet.active || !ship.active) { return; }
+        saucerBullet.setActive(false);
+        if (ship.active) {
+            this.scene.killShip();
+        }
+    }
+
+    _onSaucerHitsAsteroid(saucer, asteroid) {
+        if (!saucer.active || !asteroid.active) { return; }
+        saucer.setActive(false);
+        asteroid.setActive(false);
+        this.scene.killSaucer(saucer);
+        this.scene.splitAsteroid(asteroid);
+    }
+
+    _onShipHitsSaucer(ship, saucer) {
+        if (!ship.active || !saucer.active) { return; }
+        saucer.setActive(false);
+        this.scene.killSaucer(saucer);
+        this.scene.killShip();
     }
 }

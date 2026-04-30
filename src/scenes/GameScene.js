@@ -1,5 +1,6 @@
 import { Ship }             from '../objects/Ship.js';
 import { Asteroid }         from '../objects/Asteroid.js';
+import { Saucer }           from '../objects/Saucer.js';
 import { GameState }        from '../systems/GameState.js';
 import { InputHandler }     from '../systems/InputHandler.js';
 import { WaveManager }      from '../systems/WaveManager.js';
@@ -8,7 +9,7 @@ import { AudioManager }     from '../systems/AudioManager.js';
 import { PickupManager }    from '../systems/PickupManager.js';
 import { WrapBounds }       from '../utils/WrapBounds.js';
 import { createExplosion }  from '../utils/Explosion.js';
-import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS } from '../constants.js';
+import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE } from '../constants.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -22,9 +23,11 @@ export class GameScene extends Phaser.Scene {
         this.inputHandler = new InputHandler(this);
 
         // Physics groups
-        this.bullets   = this.physics.add.group();
-        this.asteroids = this.physics.add.group();
-        this.pickups   = this.physics.add.group();
+        this.bullets        = this.physics.add.group();
+        this.asteroids      = this.physics.add.group();
+        this.pickups        = this.physics.add.group();
+        this.saucers        = this.physics.add.group();
+        this.saucerBullets  = this.physics.add.group();
 
         // Player ship
         this.ship = new Ship(this, SCREEN_W / 2, SCREEN_H / 2);
@@ -34,7 +37,7 @@ export class GameScene extends Phaser.Scene {
 
         // Wire collisions
         this.collisionManager = new CollisionManager(this);
-        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups);
+        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets);
 
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
@@ -60,8 +63,12 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(10).setAlpha(0);
 
         // Flags
-        this._gameOver       = false;
-        this._thrusterWasOn  = false;
+        this._gameOver           = false;
+        this._thrusterWasOn      = false;
+        this._saucerSpawnTimer   = null;
+        this._saucerRespawnTimer = null;
+
+        this._scheduleSaucerSpawn();
     }
 
     update(time, delta) {
@@ -120,9 +127,19 @@ export class GameScene extends Phaser.Scene {
             b.update(delta);
         });
 
+        const allSaucerBullets = [...this.saucerBullets.getChildren()];
+        allSaucerBullets.forEach(b => {
+            WrapBounds.wrap(this, b);
+            b.update(delta);
+        });
+
         // Wrap pickups
         const allPickups = [...this.pickups.getChildren()];
         allPickups.forEach(p => WrapBounds.wrap(this, p));
+
+        // Update saucers
+        const allSaucers = [...this.saucers.getChildren()];
+        allSaucers.forEach(s => s.update(delta));
 
         // Wave logic
         this.waveManager.update(time, delta);
@@ -194,11 +211,14 @@ export class GameScene extends Phaser.Scene {
         if (isGameOver) {
             this._gameOver = true;
             this.ship.destroy();
+            this._cancelSaucerTimers();
 
             this.time.delayedCall(1500, () => {
                 this.scene.start('GameOverScene', { score: this.gameState.score });
             });
         } else {
+            this.ship.setActive(true);
+            this.ship.setVisible(true);
             this.ship.setPosition(SCREEN_W / 2, SCREEN_H / 2);
             this.ship.body.setVelocity(0, 0);
             this.ship.body.setAcceleration(0, 0);
@@ -216,5 +236,70 @@ export class GameScene extends Phaser.Scene {
             duration: 1200,
             delay:    300,
         });
+    }
+
+    _scheduleSaucerSpawn() {
+        this._saucerSpawnTimer = this.time.delayedCall(SAUCER_SPAWN_DELAY, () => {
+            this._spawnSaucer();
+        });
+    }
+
+    _spawnSaucer() {
+        const activeSaucers = this.saucers.countActive(true);
+        if (activeSaucers > 0) { return; }
+
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const edge = Phaser.Math.Between(0, 3);
+        let x, y;
+
+        if (edge === 0) {
+            x = Phaser.Math.Between(0, w);
+            y = 0;
+        } else if (edge === 1) {
+            x = Phaser.Math.Between(0, w);
+            y = h;
+        } else if (edge === 2) {
+            x = 0;
+            y = Phaser.Math.Between(0, h);
+        } else {
+            x = w;
+            y = Phaser.Math.Between(0, h);
+        }
+
+        const saucer = new Saucer(this, x, y);
+        this.saucers.add(saucer);
+    }
+
+    killSaucer(saucer) {
+        this.gameState.addScore(SAUCER_SCORE);
+        createExplosion(this, saucer.x, saucer.y, 15);
+        this.audioManager.playExplosion('large');
+        saucer.die();
+
+        if (this._saucerRespawnTimer) {
+            this.time.removeEvent(this._saucerRespawnTimer);
+        }
+        this._saucerRespawnTimer = this.time.delayedCall(SAUCER_RESPAWN_DELAY, () => {
+            this._spawnSaucer();
+        });
+    }
+
+    resetSaucer() {
+        this._cancelSaucerTimers();
+        const saucers = [...this.saucers.getChildren()];
+        saucers.forEach(s => s.die());
+        this._scheduleSaucerSpawn();
+    }
+
+    _cancelSaucerTimers() {
+        if (this._saucerSpawnTimer) {
+            this.time.removeEvent(this._saucerSpawnTimer);
+            this._saucerSpawnTimer = null;
+        }
+        if (this._saucerRespawnTimer) {
+            this.time.removeEvent(this._saucerRespawnTimer);
+            this._saucerRespawnTimer = null;
+        }
     }
 }
