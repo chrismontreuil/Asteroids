@@ -231,16 +231,16 @@ export const TextureFactory = {
     g.fillStyle(wingColor, 1);
     g.beginPath();
     g.moveTo(24, 50);
-    g.lineTo(10, 58);
-    g.lineTo(18, 62);
+    g.lineTo(17, 54);
+    g.lineTo(21, 56);
     g.closePath();
     g.fillPath();
 
     // Right wing tip
     g.beginPath();
     g.moveTo(56, 50);
-    g.lineTo(70, 58);
-    g.lineTo(62, 62);
+    g.lineTo(63, 54);
+    g.lineTo(59, 56);
     g.closePath();
     g.fillPath();
 
@@ -268,16 +268,16 @@ export const TextureFactory = {
     // Left wing outline
     g.beginPath();
     g.moveTo(24, 50);
-    g.lineTo(10, 58);
-    g.lineTo(18, 62);
+    g.lineTo(17, 54);
+    g.lineTo(21, 56);
     g.closePath();
     g.strokePath();
 
     // Right wing outline
     g.beginPath();
     g.moveTo(56, 50);
-    g.lineTo(70, 58);
-    g.lineTo(62, 62);
+    g.lineTo(63, 54);
+    g.lineTo(59, 56);
     g.closePath();
     g.strokePath();
 
@@ -325,7 +325,14 @@ export const TextureFactory = {
       points.push({ x: cx + x, y: cy + y });
     }
 
-    g.fillStyle(0x1a1a1a, 1);
+    let fillColor = 0x292929;
+    if (key.includes("asteroid-gi")) {
+      fillColor = 0x1a1a1a;
+    } else if (key.includes("asteroid-sm")) {
+      fillColor = 0x444444;
+    }
+
+    g.fillStyle(fillColor, 1);
     g.beginPath();
     g.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) {
@@ -333,15 +340,6 @@ export const TextureFactory = {
     }
     g.closePath();
     g.fillPath();
-
-    g.lineStyle(2, 0xffffff, 1);
-    g.beginPath();
-    g.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      g.lineTo(points[i].x, points[i].y);
-    }
-    g.closePath();
-    g.strokePath();
 
     g.generateTexture(key, size, size);
     g.destroy();
