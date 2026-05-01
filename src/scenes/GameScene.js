@@ -207,6 +207,7 @@ export class GameScene extends Phaser.Scene {
 
         createExplosion(this, this.ship.x, this.ship.y, 20);
         this.audioManager.playExplosion('large');
+        this.audioManager.playDeath();
         this.audioManager.stopThruster();
         this._thrusterWasOn = false;
 

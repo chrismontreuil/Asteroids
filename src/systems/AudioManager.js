@@ -180,4 +180,31 @@ export class AudioManager {
             osc.stop(endTime);
         });
     }
+
+    playDeath() {
+        const ctx = this._getCtx();
+        const now = ctx.currentTime;
+        const bendDuration = 0.6;
+        const bendEndTime = now + bendDuration;
+
+        const highFreq = 659 * 0.125;
+        const lowFreq = 262 * 0.125;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(highFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(lowFreq, bendEndTime);
+
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.setValueAtTime(0.05, now + 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.001, bendEndTime);
+
+        osc.start(now);
+        osc.stop(bendEndTime);
+    }
 }

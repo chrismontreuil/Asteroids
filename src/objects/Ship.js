@@ -122,7 +122,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         const noseX = this.x + Math.cos(rad) * 15;
         const noseY = this.y + Math.sin(rad) * 15;
 
-        const targets = this._get5ClosestAsteroidsInFront(rad);
+        const targets = this._get5ClosestTargetsInFront(rad);
 
         for (let i = 0; i < 5; i++) {
             const bullets = this.scene.bullets.getChildren();
@@ -224,8 +224,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.scene.audioManager.playShoot();
     }
 
-    _get5ClosestAsteroidsInFront(shipAngleRad) {
+    _get5ClosestTargetsInFront(shipAngleRad) {
         const allAsteroids = this.scene.asteroids.getChildren();
+        const allSaucers = this.scene.saucers.getChildren();
         const inFront = [];
 
         for (const asteroid of allAsteroids) {
@@ -240,13 +241,29 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
             if (absDiff <= Math.PI / 2) {
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                inFront.push({ asteroid, distance });
+                inFront.push({ target: asteroid, distance });
+            }
+        }
+
+        for (const saucer of allSaucers) {
+            if (!saucer.active) continue;
+
+            const dx = saucer.x - this.x;
+            const dy = saucer.y - this.y;
+            const saucerAngle = Math.atan2(dy, dx);
+
+            const angleDiff = Phaser.Math.Angle.Wrap(saucerAngle - shipAngleRad);
+            const absDiff = Math.abs(angleDiff);
+
+            if (absDiff <= Math.PI / 2) {
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                inFront.push({ target: saucer, distance });
             }
         }
 
         inFront.sort((a, b) => a.distance - b.distance);
 
-        return inFront.slice(0, 5).map(item => item.asteroid);
+        return inFront.slice(0, 5).map(item => item.target);
     }
 
     _fireBurst() {
