@@ -13,9 +13,6 @@ export function initGlobalAudioContext() {
 export class AudioManager {
     constructor() {
         this._thrusterNodes = null;   // { osc, gain } while thrusting
-        this._heartbeatTimer    = 0;
-        this._heartbeatPhase    = 0;    // alternates 0/1 for the two-thump pattern
-        this._heartbeatInterval = 1200; // ms; decreases as fewer asteroids remain
     }
 
     // Called on first user interaction so the AudioContext is created with user gesture
@@ -116,40 +113,6 @@ export class AudioManager {
         this._thrusterNodes = null;
     }
 
-    // Call every frame; asteroidCount drives tempo
-    updateHeartbeat(delta, asteroidCount) {
-        // Interval ranges from 1200ms (12+ asteroids) to 400ms (0 asteroids)
-        const maxCount = 12;
-        const t = Math.max(0, Math.min(1, (maxCount - asteroidCount) / maxCount));
-        this._heartbeatInterval = 1200 - t * 800;
-
-        this._heartbeatTimer += delta;
-        if (this._heartbeatTimer >= this._heartbeatInterval) {
-            this._heartbeatTimer = 0;
-            this._thump(this._heartbeatPhase);
-            this._heartbeatPhase = this._heartbeatPhase === 0 ? 1 : 0;
-        }
-    }
-
-    _thump(phase) {
-        const ctx  = this._getCtx();
-        const freq = phase === 0 ? 30 : 37;
-
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.4, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
-
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.07);
-    }
 
     playPickup(pitchMultiplier = 1) {
         const ctx = this._getCtx();
@@ -206,5 +169,53 @@ export class AudioManager {
 
         osc.start(now);
         osc.stop(bendEndTime);
+    }
+
+    playDrumBeat(isLow) {
+        const ctx = this._getCtx();
+        const duration = 2;
+        const volume = 0.4;
+
+        const bufferSize = Math.floor(ctx.sampleRate * duration);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(isLow ? 200 : 350, ctx.currentTime);
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        source.start();
+    }
+
+    playLowTone(isHigh) {
+        const ctx = this._getCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(isHigh ? 440 : 220, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(isHigh ? 55 : 27.5, ctx.currentTime + 0.12);
+
+        gain.gain.setValueAtTime(0.6, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
     }
 }

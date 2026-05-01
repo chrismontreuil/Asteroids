@@ -8,6 +8,7 @@ import { WaveManager }      from '../systems/WaveManager.js';
 import { CollisionManager } from '../systems/CollisionManager.js';
 import { AudioManager }     from '../systems/AudioManager.js';
 import { PickupManager }    from '../systems/PickupManager.js';
+import { SoundtrackManager } from '../systems/SoundtrackManager.js';
 import { WrapBounds }       from '../utils/WrapBounds.js';
 import { createExplosion }  from '../utils/Explosion.js';
 import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE, OCTOPUS_BODY_SCORE, OCTOPUS_TENTACLE_SCORE } from '../constants.js';
@@ -37,6 +38,9 @@ export class GameScene extends Phaser.Scene {
 
         // Pickup manager
         this.pickupManager = new PickupManager(this);
+
+        // Soundtrack
+        this.soundtrackManager = new SoundtrackManager(this, this.audioManager);
 
         // Wire collisions
         this.collisionManager = new CollisionManager(this);
@@ -150,9 +154,6 @@ export class GameScene extends Phaser.Scene {
 
         // Wave logic
         this.waveManager.update(time, delta);
-
-        // Heartbeat audio tempo based on remaining asteroids
-        this.audioManager.updateHeartbeat(delta, this.asteroids.countActive(true));
 
         // HUD
         this.scoreText.setText('SCORE: ' + this.gameState.score);
@@ -326,5 +327,9 @@ export class GameScene extends Phaser.Scene {
             this.time.removeEvent(this._saucerRespawnTimer);
             this._saucerRespawnTimer = null;
         }
+    }
+
+    shutdown() {
+        this.soundtrackManager.shutdown();
     }
 }
