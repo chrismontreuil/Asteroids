@@ -23,6 +23,12 @@ export class Saucer extends Phaser.Physics.Arcade.Sprite {
       callback: () => this._fire(),
       loop: true,
     });
+
+    this._soundTimer = this.scene.time.addEvent({
+      delay: 1000,
+      callback: () => this.scene.audioManager.playSaucerSound(),
+      loop: true,
+    });
   }
 
   update(delta) {
@@ -84,12 +90,18 @@ export class Saucer extends Phaser.Physics.Arcade.Sprite {
     bullet.setTint(0xff0000);
     this.scene.saucerBullets.add(bullet);
     bullet.launch(angle);
+
+    this.scene.sound.play('saucer-bullet');
   }
 
   die() {
     if (this._fireTimer && this.scene) {
       this.scene.time.removeEvent(this._fireTimer);
       this._fireTimer = null;
+    }
+    if (this._soundTimer && this.scene) {
+      this.scene.time.removeEvent(this._soundTimer);
+      this._soundTimer = null;
     }
     this.destroy();
   }

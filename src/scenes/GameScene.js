@@ -21,7 +21,7 @@ export class GameScene extends Phaser.Scene {
     create() {
         // State and systems
         this.gameState    = new GameState();
-        this.audioManager = new AudioManager();
+        this.audioManager = new AudioManager(this);
         this.inputHandler = new InputHandler(this);
 
         // Physics groups

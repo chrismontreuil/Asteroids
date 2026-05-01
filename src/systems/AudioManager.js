@@ -11,8 +11,25 @@ export function initGlobalAudioContext() {
 }
 
 export class AudioManager {
-    constructor() {
+    constructor(scene = null) {
         this._thrusterNodes = null;   // { osc, gain } while thrusting
+        this._scene = scene;
+    }
+
+    setScene(scene) {
+        this._scene = scene;
+    }
+
+    _createDistortionCurve(amount = 50) {
+        const k = amount;
+        const n_samples = 44100;
+        const curve = new Float32Array(n_samples);
+        const deg = Math.PI / 180;
+        for (let i = 0; i < n_samples; ++i) {
+            let x = (i * 2) / n_samples - 1;
+            curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+        }
+        return curve;
     }
 
     // Called on first user interaction so the AudioContext is created with user gesture
@@ -27,32 +44,71 @@ export class AudioManager {
     }
 
     playShoot() {
-        const ctx  = this._getCtx();
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('bullet');
+        }
+    }
 
-        osc.connect(gain);
-        gain.connect(ctx.destination);
+    playPlasma() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('plasma');
+        }
+    }
 
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.12);
+    playPurpleBlast() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('pickup-purple');
+        }
+    }
 
-        gain.gain.setValueAtTime(0.25, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.12);
+    playPinkBlast() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('pickup-pink');
+        }
     }
 
     playExplosion(size) {
+        if (this._scene && this._scene.sound) {
+            let soundKey, volume;
+
+            if (size === 'giant') {
+                soundKey = 'explosion-giant';
+                volume = 1;
+            } else if (size === 'large') {
+                soundKey = 'explosion-large';
+                volume = 0.5;
+            } else if (size === 'medium') {
+                soundKey = 'explosion-medium';
+                volume = 1;
+            } else {
+                soundKey = 'explosion-medium';
+                volume = 0.4;
+            }
+
+            this._scene.sound.play(soundKey, { volume });
+        } else if (size === 'small') {
+            const volume = 0.08;
+            this._playExplosionBoom(volume);
+
+            if (this._scene) {
+                this._scene.time.delayedCall(100, () => {
+                    this._playExplosionBoom(volume);
+                });
+                this._scene.time.delayedCall(200, () => {
+                    this._playExplosionBoom(volume);
+                });
+            }
+        }
+    }
+
+    _playExplosionBoom(volume) {
         const ctx = this._getCtx();
-        const duration = 2;
-        const volume = size === 'large' ? 0.4 : size === 'medium' ? 0.3 : 0.2;
+        const duration = 1;
 
         const bufferSize = Math.floor(ctx.sampleRate * duration);
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
+
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
@@ -60,18 +116,50 @@ export class AudioManager {
         const source = ctx.createBufferSource();
         source.buffer = buffer;
 
+        const distortion = ctx.createWaveShaper();
+        distortion.curve = this._createDistortionCurve(400);
+
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(280, ctx.currentTime);
+        filter.frequency.setValueAtTime(800, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(volume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
 
-        source.connect(filter);
+        source.connect(distortion);
+        distortion.connect(filter);
         filter.connect(gain);
         gain.connect(ctx.destination);
         source.start();
+    }
+
+    playSaucerSound() {
+        const ctx = this._getCtx();
+        const duration = 1;
+        const lowFreq = 150;
+        const highFreq = 300;
+        const volume = 0.2;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(lowFreq, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(highFreq, ctx.currentTime + 0.25);
+        osc.frequency.linearRampToValueAtTime(lowFreq, ctx.currentTime + 0.5);
+        osc.frequency.linearRampToValueAtTime(highFreq, ctx.currentTime + 0.75);
+        osc.frequency.linearRampToValueAtTime(lowFreq, ctx.currentTime + duration);
+
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
     }
 
     startThruster() {
@@ -114,7 +202,8 @@ export class AudioManager {
     }
 
 
-    playPickup(pitchMultiplier = 1) {
+    playPickup(pitchMultiplier = 1, pickupType = null) {
+
         const ctx = this._getCtx();
         // C, C, G (down), B, C, G, C, E
         const baseNotes = [262, 262, 196, 247, 262, 392, 523, 659];

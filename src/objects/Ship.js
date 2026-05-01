@@ -135,6 +135,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             bullet.setTint(0x00ff00);
             this.scene.bullets.add(bullet);
             bullet.launch(rad, 400);
+            this.scene.audioManager.playPlasma();
         }
 
         this.scene.audioManager.playShoot();
@@ -179,7 +180,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             },
         });
 
-        this.scene.audioManager.playShoot();
+        this.scene.audioManager.playPurpleBlast();
     }
 
     _firePinkExplosion() {
@@ -221,7 +222,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             },
         });
 
-        this.scene.audioManager.playShoot();
+        this.scene.audioManager.playPinkBlast();
     }
 
     _get5ClosestTargetsInFront(shipAngleRad) {

@@ -99,7 +99,8 @@ export class PickupManager {
         }
 
         if (now - this.lastSoundTime >= this.soundCooldownMs) {
-            this.scene.audioManager.playPickup(pitchMultiplier);
+            const pickupType = pickup.constructor.name;
+            this.scene.audioManager.playPickup(pitchMultiplier, pickupType);
             this.lastSoundTime = now;
         }
 
