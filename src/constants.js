@@ -104,5 +104,5 @@ export const SAUCER_SCORE = 500;
 export const OCTOPUS_SPEED = 0;
 export const OCTOPUS_FIRE_INTERVAL = 3000;
 export const OCTOPUS_TENTACLE_REGROW_DELAY = 5000;
-export const OCTOPUS_BODY_SCORE = 1000;
-export const OCTOPUS_TENTACLE_SCORE = 500;
+export const OCTOPUS_BODY_SCORE = 10000;
+export const OCTOPUS_TENTACLE_SCORE = 0;

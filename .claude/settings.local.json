@@ -25,7 +25,9 @@
       "Bash(xargs -r kill -9)",
       "Bash(curl -s http://localhost:3000)",
       "WebSearch",
-      "Bash(awk '{print $5, $9}')"
+      "Bash(awk '{print $5, $9}')",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\\\\public\" -Recurse)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

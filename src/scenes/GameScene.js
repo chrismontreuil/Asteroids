@@ -289,7 +289,7 @@ export class GameScene extends Phaser.Scene {
             this.audioManager.playExtraLife();
         }
         createExplosion(this, saucer.x, saucer.y, 15);
-        this.audioManager.playExplosion('large');
+        this.audioManager.playSaucerDeath();
         saucer.die();
 
         if (this._saucerRespawnTimer) {
@@ -305,7 +305,7 @@ export class GameScene extends Phaser.Scene {
         if (extraLifeEarned) {
             this.audioManager.playExtraLife();
         }
-        this.audioManager.playExplosion('small');
+        this.audioManager.playOctopusHit();
     }
 
     killOctopus(octopus) {

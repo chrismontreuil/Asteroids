@@ -325,4 +325,16 @@ export class AudioManager {
             this._scene.sound.play('rock-cinematic');
         }
     }
+
+    playOctopusHit() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('octopus-hit');
+        }
+    }
+
+    playSaucerDeath() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('saucer-death');
+        }
+    }
 }

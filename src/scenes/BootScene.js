@@ -17,6 +17,8 @@ export class BootScene extends Phaser.Scene {
         this.load.audio('extra-life', 'sound fx/extra_life.mp3');
         this.load.audio('second-wave', 'sound fx/second_wave.mp3');
         this.load.audio('rock-cinematic', 'sound fx/lordsonny-rock-cinematic-161648.mp3');
+        this.load.audio('octopus-hit', 'sound fx/bb6.mp3');
+        this.load.audio('saucer-death', 'sound fx/zap.mp3');
     }
 
     create() {
