@@ -20,7 +20,7 @@ export class SoundtrackManager {
             { note: 'p', dur: 4 },
         ];
 
-        const drumTempos = [180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510];
+        const drumTempos = [180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870];
         let timeOffset = 0;
 
         for (let tempoIdx = 0; tempoIdx < drumTempos.length; tempoIdx++) {
