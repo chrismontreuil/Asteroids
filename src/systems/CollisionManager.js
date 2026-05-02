@@ -161,8 +161,6 @@ export class CollisionManager {
 
     _onShipHitsOctopus(ship, octopus) {
         if (!ship.active || !octopus.active) { return; }
-        octopus.setActive(false);
-        this.scene.killOctopus(octopus);
         this.scene.killShip();
     }
 }
