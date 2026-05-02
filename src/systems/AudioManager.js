@@ -337,4 +337,10 @@ export class AudioManager {
             this._scene.sound.play('saucer-death');
         }
     }
+
+    playGreenBullet() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('green-bullet');
+        }
+    }
 }

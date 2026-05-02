@@ -138,7 +138,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             this.scene.audioManager.playPlasma();
         }
 
-        this.scene.audioManager.playShoot();
+        this.scene.audioManager.playGreenBullet();
     }
 
     _firePurpleExplosion() {

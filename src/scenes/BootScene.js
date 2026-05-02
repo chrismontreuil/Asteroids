@@ -19,6 +19,7 @@ export class BootScene extends Phaser.Scene {
         this.load.audio('rock-cinematic', 'sound fx/lordsonny-rock-cinematic-161648.mp3');
         this.load.audio('octopus-hit', 'sound fx/bb6.mp3');
         this.load.audio('saucer-death', 'sound fx/zap.mp3');
+        this.load.audio('green-bullet', 'sound fx/dogwolf123-retro-siren-sound-474816.mp3');
     }
 
     create() {
