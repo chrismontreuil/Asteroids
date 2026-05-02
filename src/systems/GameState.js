@@ -14,15 +14,19 @@ export class GameState {
     addScore(points) {
         this.score += points;
 
+        let extraLifeEarned = false;
         if (this.score >= this._nextExtraLife) {
             this.lives += 1;
             this._nextExtraLife += EXTRA_LIFE_SCORE;
+            extraLifeEarned = true;
         }
 
         if (this.score > this.highScore) {
             this.highScore = this.score;
             localStorage.setItem(HIGH_SCORE_KEY, this.highScore);
         }
+
+        return extraLifeEarned;
     }
 
     // Returns true if all lives are gone

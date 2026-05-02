@@ -52,6 +52,7 @@ export class WaveManager {
     // Show wave label on all waves after the first
     if (!this._firstWave) {
       this.scene.showWaveLabel(level);
+      this.scene.audioManager.playSecondWave();
     }
     this._firstWave = false;
   }

@@ -11,6 +11,10 @@ export class MenuScene extends Phaser.Scene {
 
         const highScore = parseInt(localStorage.getItem('asteroidsHigh') || '0');
 
+        if (this.sound) {
+            this.sound.play('rock-cinematic');
+        }
+
         this.add.text(w / 2, h * 0.28, 'ASTEROIDS', {
             fontSize:   '72px',
             fill:       '#ffffff',

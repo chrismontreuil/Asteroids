@@ -164,7 +164,10 @@ export class GameScene extends Phaser.Scene {
         const pos  = { x: asteroid.x, y: asteroid.y };
         const size = asteroid.size;
 
-        this.gameState.addScore(asteroid.scoreValue);
+        const extraLifeEarned = this.gameState.addScore(asteroid.scoreValue);
+        if (extraLifeEarned) {
+            this.audioManager.playExtraLife();
+        }
         createExplosion(this, pos.x, pos.y, 10);
         this.audioManager.playExplosion(size);
 
@@ -281,7 +284,10 @@ export class GameScene extends Phaser.Scene {
     }
 
     killSaucer(saucer) {
-        this.gameState.addScore(SAUCER_SCORE);
+        const extraLifeEarned = this.gameState.addScore(SAUCER_SCORE);
+        if (extraLifeEarned) {
+            this.audioManager.playExtraLife();
+        }
         createExplosion(this, saucer.x, saucer.y, 15);
         this.audioManager.playExplosion('large');
         saucer.die();
@@ -295,12 +301,18 @@ export class GameScene extends Phaser.Scene {
     }
 
     damageOctopusTentacle(octopus) {
-        this.gameState.addScore(OCTOPUS_TENTACLE_SCORE);
+        const extraLifeEarned = this.gameState.addScore(OCTOPUS_TENTACLE_SCORE);
+        if (extraLifeEarned) {
+            this.audioManager.playExtraLife();
+        }
         this.audioManager.playExplosion('small');
     }
 
     killOctopus(octopus) {
-        this.gameState.addScore(OCTOPUS_BODY_SCORE);
+        const extraLifeEarned = this.gameState.addScore(OCTOPUS_BODY_SCORE);
+        if (extraLifeEarned) {
+            this.audioManager.playExtraLife();
+        }
         createExplosion(this, octopus.x, octopus.y, 20);
         this.audioManager.playExplosion('large');
         octopus.die();

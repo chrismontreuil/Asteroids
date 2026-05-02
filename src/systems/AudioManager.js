@@ -236,7 +236,7 @@ export class AudioManager {
     playDeath() {
         const ctx = this._getCtx();
         const now = ctx.currentTime;
-        const bendDuration = 0.6;
+        const bendDuration = 1.2;
         const bendEndTime = now + bendDuration;
 
         const highFreq = 659 * 0.125;
@@ -306,5 +306,23 @@ export class AudioManager {
 
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.12);
+    }
+
+    playExtraLife() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('extra-life');
+        }
+    }
+
+    playSecondWave() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('second-wave');
+        }
+    }
+
+    playRockCinematic() {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play('rock-cinematic');
+        }
     }
 }

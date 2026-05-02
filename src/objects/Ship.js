@@ -113,7 +113,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         const spreadAngles = [-30, -15, 0, 15, 30];
         for (const offset of spreadAngles) {
             const rad = Phaser.Math.DegToRad(this.angle - 90 + offset);
-            this._fireOnceAtAngle(rad, 0xffff00);
+            this._fireOnceAtAngle(rad, 0xffff00, 2);
         }
     }
 
@@ -134,7 +134,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
             const bullet = new HeatSeekBullet(this.scene, noseX, noseY, target);
             bullet.setTint(0x00ff00);
             this.scene.bullets.add(bullet);
-            bullet.launch(rad, 400);
+            bullet.launch(rad, 600);
             this.scene.audioManager.playPlasma();
         }
 
@@ -291,7 +291,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this._fireOnceAtAngle(rad, tint);
     }
 
-    _fireOnceAtAngle(rad, tint) {
+    _fireOnceAtAngle(rad, tint, scale = 1) {
         const bullets = this.scene.bullets.getChildren();
         if (bullets.length >= MAX_PLAYER_BULLETS) { return; }
 
@@ -300,6 +300,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
         const bullet = new Bullet(this.scene, noseX, noseY);
         bullet.setTint(tint);
+        bullet.setScale(scale);
         this.scene.bullets.add(bullet);
         bullet.launch(rad);
         this.scene.audioManager.playShoot();
