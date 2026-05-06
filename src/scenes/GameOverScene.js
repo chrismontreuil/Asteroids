@@ -27,7 +27,7 @@ export class GameOverScene extends Phaser.Scene {
             fontFamily: 'monospace',
         }).setOrigin(0.5);
 
-        const prompt = this.add.text(w / 2, h * 0.72, 'PRESS ENTER TO RETRY', {
+        const prompt = this.add.text(w / 2, h * 0.72, 'PRESS ENTER TO START', {
             fontSize:   '24px',
             fill:       '#ffffff',
             fontFamily: 'monospace',
@@ -41,7 +41,7 @@ export class GameOverScene extends Phaser.Scene {
             repeat:   -1,
         });
 
-        const startGame = () => this.scene.start('GameScene');
+        const startGame = () => this.scene.start('MenuScene');
 
         this.input.keyboard.once('keydown-ENTER', startGame);
 

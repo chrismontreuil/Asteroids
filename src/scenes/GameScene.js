@@ -21,6 +21,8 @@ export class GameScene extends Phaser.Scene {
     create() {
         // State and systems
         this.gameState    = new GameState();
+        const startingWave = this.sys.settings.data?.startingWave || 1;
+        this.gameState.level = startingWave;
         this.audioManager = new AudioManager(this);
         this.inputHandler = new InputHandler(this);
 

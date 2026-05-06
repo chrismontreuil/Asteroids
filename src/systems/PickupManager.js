@@ -147,6 +147,10 @@ export class PickupManager {
         } else {
             this.spawnNext();
         }
+
+        if (this.mode !== 'full') {
+            pickup.destroy();
+        }
     }
 
     setMode(mode, moving = true) {
