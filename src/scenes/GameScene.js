@@ -57,7 +57,7 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'monospace',
         }).setDepth(10);
 
-        this.livesText = this.add.text(SCREEN_W - 16, 16, 'LIVES: 3', {
+        this.livesText = this.add.text(SCREEN_W - 16, 16, 'LIVES: 5', {
             fontSize:   '18px',
             fill:       '#ffffff',
             fontFamily: 'monospace',

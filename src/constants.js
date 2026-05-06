@@ -90,7 +90,7 @@ export const PICKUP_LIFETIME = 10000;
 export const BURST_BULLET_COUNT = 5;
 export const BURST_BULLET_DELAY = 50;
 
-export const STARTING_LIVES = 3;
+export const STARTING_LIVES = 5;
 export const EXTRA_LIFE_SCORE = 10000;
 export const INVULNERABILITY_MS = 3000;
 
