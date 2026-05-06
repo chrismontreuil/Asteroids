@@ -42,6 +42,8 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
         this.hasPurpleExplosion = false;
         this.hasPinkExplosion = false;
+
+        this._colorTag = null;
     }
 
     update(input) {
@@ -332,19 +334,50 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _setTextureForState(isThrusting) {
+        let colorMode;
         if (this.hasPinkExplosion) {
-            this.setTexture(isThrusting ? TEX.SHIP_PINK_THRUST : TEX.SHIP_PINK);
+            colorMode = 'pink';
         } else if (this.hasPurpleExplosion) {
-            this.setTexture(isThrusting ? TEX.SHIP_PURPLE_THRUST : TEX.SHIP_PURPLE);
+            colorMode = 'purple';
         } else if (this.hasWideFire) {
-            this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
+            colorMode = 'wide';
         } else if (this.hasBurstFire) {
-            this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
+            colorMode = 'burst';
         } else if (this.hasHeatSeek) {
+            colorMode = 'heat';
+        } else {
+            colorMode = this._colorTag;
+        }
+
+        if (colorMode === 'pink') {
+            this.setTexture(isThrusting ? TEX.SHIP_PINK_THRUST : TEX.SHIP_PINK);
+        } else if (colorMode === 'purple') {
+            this.setTexture(isThrusting ? TEX.SHIP_PURPLE_THRUST : TEX.SHIP_PURPLE);
+        } else if (colorMode === 'wide') {
+            this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
+        } else if (colorMode === 'burst') {
+            this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
+        } else if (colorMode === 'heat') {
             this.setTexture(isThrusting ? TEX.SHIP_HEAT_THRUST : TEX.SHIP_HEAT);
         } else {
             this.setTexture(isThrusting ? TEX.SHIP_THRUST : TEX.SHIP);
         }
+    }
+
+    applyColorOnly(colorType) {
+        this.hasBurstFire = false;
+        this.hasWideFire = false;
+        this.hasHeatSeek = false;
+        this.hasPurpleExplosion = false;
+        this.hasPinkExplosion = false;
+        this._burstActive = false;
+        this._burstCount = 0;
+        if (this._burstTimer) {
+            this.scene.time.removeEvent(this._burstTimer);
+            this._burstTimer = null;
+        }
+        this._colorTag = colorType;
+        this._setTextureForState(false);
     }
 
     enableBurstFire() {
@@ -465,6 +498,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.hasHeatSeek = false;
         this.hasPurpleExplosion = false;
         this.hasPinkExplosion = false;
+        this._colorTag = null;
         this._setTextureForState(false);
         this._burstActive = false;
         this._burstCount = 0;

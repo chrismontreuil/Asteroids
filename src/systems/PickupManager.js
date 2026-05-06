@@ -18,11 +18,14 @@ export class PickupManager {
         this.pickupCooldowns = new Map();
         this.lastSoundTime = 0;
         this.soundCooldownMs = 1000;
+        this.mode = 'full';
+        this.pickupsMoving = true;
+        this.trainingComplete = false;
 
-        this._spawnBurstAndGreen();
+        this._spawnInitial();
     }
 
-    _spawnBurstAndGreen() {
+    _spawnInitial() {
         const margin = 100;
         const x1 = Phaser.Math.Between(margin, SCREEN_W - margin);
         const y1 = Phaser.Math.Between(margin, SCREEN_H - margin);
@@ -31,7 +34,10 @@ export class PickupManager {
         this.pickups.push(burstPickup);
         this.spawnedTypes.add('burst');
         this.scene.pickups.add(burstPickup);
-        burstPickup.launch();
+
+        if (this.pickupsMoving) {
+            burstPickup.launch();
+        }
 
         this.nextPickupType = 'wide';
     }
@@ -59,7 +65,10 @@ export class PickupManager {
                 this.pickups.push(newPickup);
                 this.spawnedTypes.add(this.nextPickupType);
                 this.scene.pickups.add(newPickup);
-                newPickup.launch();
+
+                if (this.pickupsMoving) {
+                    newPickup.launch();
+                }
             }
         }
     }
@@ -73,30 +82,59 @@ export class PickupManager {
             return;
         }
 
-        pickup.onPickup(this.scene.ship);
-        this.scene.gameState.addScore(1000);
-        this.pickupCooldowns.set(pickup, now);
-
         let pitchMultiplier = 1;
+        let isLastPickup = false;
+
         if (pickup instanceof BurstFirePickup) {
             pitchMultiplier = 0.5; // blue - lowest
+            if (this.mode === 'full') {
+                pickup.onPickup(this.scene.ship);
+            } else if (this.mode === 'blueWeapon') {
+                pickup.onPickup(this.scene.ship);
+            } else {
+                this.scene.ship.applyColorOnly('burst');
+            }
             this.nextPickupType = 'wide';
         } else if (pickup instanceof WideFirePickup) {
             pitchMultiplier = 1.0; // yellow
+            if (this.mode === 'full') {
+                pickup.onPickup(this.scene.ship);
+            } else {
+                this.scene.ship.applyColorOnly('wide');
+            }
             this.widePickupCollected = true;
             this.nextPickupType = 'green';
         } else if (pickup instanceof GreenPickup) {
             pitchMultiplier = 1.26; // green
+            if (this.mode === 'full') {
+                pickup.onPickup(this.scene.ship);
+            } else {
+                this.scene.ship.applyColorOnly('heat');
+            }
             this.greenPickupCollected = true;
             this.nextPickupType = 'purple';
         } else if (pickup instanceof PurplePickup) {
             pitchMultiplier = 1.5; // purple
+            if (this.mode === 'full') {
+                pickup.onPickup(this.scene.ship);
+            } else {
+                this.scene.ship.applyColorOnly('purple');
+            }
             this.purplePickupCollected = true;
             this.nextPickupType = 'pink';
         } else if (pickup instanceof PinkPickup) {
             pitchMultiplier = 2.0; // pink - highest
+            if (this.mode === 'full') {
+                pickup.onPickup(this.scene.ship);
+            } else {
+                this.scene.ship.applyColorOnly('pink');
+            }
+            isLastPickup = true;
             this.nextPickupType = 'burst';
         }
+
+        this.scene.gameState.addScore(1000);
+        this.pickupCooldowns.set(pickup, now);
 
         if (now - this.lastSoundTime >= this.soundCooldownMs) {
             const pickupType = pickup.constructor.name;
@@ -104,10 +142,20 @@ export class PickupManager {
             this.lastSoundTime = now;
         }
 
-        this.spawnNext();
+        if (isLastPickup && this.mode !== 'full') {
+            this.trainingComplete = true;
+        } else {
+            this.spawnNext();
+        }
+    }
+
+    setMode(mode, moving = true) {
+        this.mode = mode;
+        this.pickupsMoving = moving;
     }
 
     reset() {
+        this.trainingComplete = false;
         this.nextPickupType = 'burst';
         this.widePickupCollected = false;
         this.greenPickupCollected = false;
@@ -116,6 +164,9 @@ export class PickupManager {
         this.pickupCooldowns.clear();
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];
-        this._spawnBurstAndGreen();
+
+        if (this.mode !== 'none') {
+            this._spawnInitial();
+        }
     }
 }

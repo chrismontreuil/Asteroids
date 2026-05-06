@@ -292,10 +292,13 @@ export class GameScene extends Phaser.Scene {
         this.audioManager.playSaucerDeath();
         saucer.die();
 
+        this.waveManager.onSaucerKilled();
+
         if (this._saucerRespawnTimer) {
             this.time.removeEvent(this._saucerRespawnTimer);
         }
-        this._saucerRespawnTimer = this.time.delayedCall(SAUCER_RESPAWN_DELAY, () => {
+        const respawnDelay = this.waveManager.getSaucerRespawnDelay();
+        this._saucerRespawnTimer = this.time.delayedCall(respawnDelay, () => {
             this._spawnSaucer();
         });
     }
@@ -328,6 +331,12 @@ export class GameScene extends Phaser.Scene {
         const saucers = [...this.saucers.getChildren()];
         saucers.forEach(s => s.die());
         this._scheduleSaucerSpawn();
+    }
+
+    clearSaucers() {
+        this._cancelSaucerTimers();
+        const saucers = [...this.saucers.getChildren()];
+        saucers.forEach(s => s.die());
     }
 
     _cancelSaucerTimers() {
