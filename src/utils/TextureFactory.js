@@ -72,6 +72,8 @@ export const TextureFactory = {
     this._createBullet(scene);
     this._createParticle(scene);
     this._createSaucer(scene);
+    this._createBigSaucer(scene);
+    this._createMine(scene);
     this._createOctopus(scene);
     this._createBurstPickup(scene);
     this._createWidePickup(scene);
@@ -403,6 +405,42 @@ export const TextureFactory = {
     g.strokeEllipse(30, 20, 28, 16);
     g.lineBetween(16, 22, 44, 22);
     g.generateTexture(TEX.SAUCER, 60, 40);
+    g.destroy();
+  },
+
+  _createBigSaucer(scene) {
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xff0000, 1);
+    g.fillEllipse(40, 40, 75, 20);
+    g.fillEllipse(40, 28, 40, 24);
+    g.lineStyle(2, 0xffffff, 1);
+    g.strokeEllipse(40, 40, 75, 20);
+    g.strokeEllipse(40, 28, 40, 24);
+    g.lineBetween(16, 30, 64, 30);
+    g.generateTexture('big-saucer', 80, 70);
+    g.destroy();
+  },
+
+  _createMine(scene) {
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const cx = 8;
+    const cy = 8;
+    const size = 16;
+    g.fillStyle(0x333333, 1);
+    g.beginPath();
+    g.moveTo(cx, cy - 6);
+    g.lineTo(cx + 6, cy + 4);
+    g.lineTo(cx - 6, cy + 4);
+    g.closePath();
+    g.fillPath();
+    g.lineStyle(1.5, 0xffff00, 1);
+    g.beginPath();
+    g.moveTo(cx, cy - 6);
+    g.lineTo(cx + 6, cy + 4);
+    g.lineTo(cx - 6, cy + 4);
+    g.closePath();
+    g.strokePath();
+    g.generateTexture('mine', size, size);
     g.destroy();
   },
 

@@ -21,16 +21,14 @@ export class PickupManager {
         this.mode = 'full';
         this.pickupsMoving = true;
         this.trainingComplete = false;
+        this.asteroidPositions = [];
 
         this._spawnInitial();
     }
 
     _spawnInitial() {
-        const margin = 100;
-        const x1 = Phaser.Math.Between(margin, SCREEN_W - margin);
-        const y1 = Phaser.Math.Between(margin, SCREEN_H - margin);
-
-        const burstPickup = new BurstFirePickup(this.scene, x1, y1, 'pickup-burst');
+        const pos = this._findSafeSpawnPos();
+        const burstPickup = new BurstFirePickup(this.scene, pos.x, pos.y, 'pickup-burst');
         this.pickups.push(burstPickup);
         this.spawnedTypes.add('burst');
         this.scene.pickups.add(burstPickup);
@@ -42,23 +40,46 @@ export class PickupManager {
         this.nextPickupType = 'wide';
     }
 
+    _findSafeSpawnPos() {
+        const margin = 100;
+        const minDistFromAsteroid = 300;
+        let valid = false;
+        let x, y;
+
+        while (!valid) {
+            x = Phaser.Math.Between(margin, SCREEN_W - margin);
+            y = Phaser.Math.Between(margin, SCREEN_H - margin);
+
+            valid = true;
+            for (const asteroid of this.asteroidPositions) {
+                const dx = x - asteroid.x;
+                const dy = y - asteroid.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < minDistFromAsteroid) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+
+        return { x, y };
+    }
+
     spawnNext() {
         if (!this.spawnedTypes.has(this.nextPickupType)) {
-            const margin = 100;
-            const x = Phaser.Math.Between(margin, SCREEN_W - margin);
-            const y = Phaser.Math.Between(margin, SCREEN_H - margin);
+            const pos = this._findSafeSpawnPos();
 
             let newPickup;
             if (this.nextPickupType === 'burst') {
-                newPickup = new BurstFirePickup(this.scene, x, y, 'pickup-burst');
+                newPickup = new BurstFirePickup(this.scene, pos.x, pos.y, 'pickup-burst');
             } else if (this.nextPickupType === 'wide') {
-                newPickup = new WideFirePickup(this.scene, x, y, 'pickup-wide');
+                newPickup = new WideFirePickup(this.scene, pos.x, pos.y, 'pickup-wide');
             } else if (this.nextPickupType === 'green') {
-                newPickup = new GreenPickup(this.scene, x, y, 'pickup-green');
+                newPickup = new GreenPickup(this.scene, pos.x, pos.y, 'pickup-green');
             } else if (this.nextPickupType === 'purple') {
-                newPickup = new PurplePickup(this.scene, x, y, 'pickup-purple');
+                newPickup = new PurplePickup(this.scene, pos.x, pos.y, 'pickup-purple');
             } else if (this.nextPickupType === 'pink') {
-                newPickup = new PinkPickup(this.scene, x, y, 'pickup-pink');
+                newPickup = new PinkPickup(this.scene, pos.x, pos.y, 'pickup-pink');
             }
 
             if (newPickup) {
@@ -158,6 +179,10 @@ export class PickupManager {
         this.pickupsMoving = moving;
     }
 
+    setAsteroidPositions(positions) {
+        this.asteroidPositions = positions;
+    }
+
     reset() {
         this.trainingComplete = false;
         this.nextPickupType = 'burst';
@@ -168,6 +193,7 @@ export class PickupManager {
         this.pickupCooldowns.clear();
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];
+        this.asteroidPositions = [];
 
         if (this.mode !== 'none') {
             this._spawnInitial();

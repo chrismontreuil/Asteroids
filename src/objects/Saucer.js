@@ -90,8 +90,6 @@ export class Saucer extends Phaser.Physics.Arcade.Sprite {
     bullet.setTint(0xff0000);
     this.scene.saucerBullets.add(bullet);
     bullet.launch(angle);
-
-    this.scene.sound.play('saucer-bullet');
   }
 
   die() {

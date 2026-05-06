@@ -101,6 +101,17 @@ export const SAUCER_RESPAWN_DELAY = 15000;
 export const SAUCER_SPAWN_DELAY = 10000;
 export const SAUCER_SCORE = 500;
 
+export const BIG_SAUCER_SPEED = 200;
+export const BIG_SAUCER_AVOID_RADIUS = 280;
+export const BIG_SAUCER_FIRE_INTERVAL = 5000;
+export const BIG_SAUCER_MAX_HEALTH = 20;
+export const BIG_SAUCER_SCORE = 1000;
+
+export const MINE_LIFESPAN = 3000;
+export const MINE_EXPLOSION_RADIUS = 300;
+export const MINE_EXPLOSION_DURATION = 300;
+export const MINE_SPEED = 250;
+
 export const OCTOPUS_SPEED = 0;
 export const OCTOPUS_FIRE_INTERVAL = 3000;
 export const OCTOPUS_TENTACLE_REGROW_DELAY = 5000;

@@ -3,7 +3,7 @@ export class CollisionManager {
         this.scene = scene;
     }
 
-    register(ship, bullets, asteroids, pickups, saucers, saucerBullets, octopuses, tentacles) {
+    register(ship, bullets, asteroids, pickups, saucers, saucerBullets, mines, octopuses, tentacles) {
         const physics = this.scene.physics;
 
         physics.add.overlap(
@@ -69,6 +69,16 @@ export class CollisionManager {
             );
         }
 
+        if (mines) {
+            physics.add.overlap(
+                mines,
+                asteroids,
+                this._onMineHitsAsteroid,
+                null,
+                this,
+            );
+        }
+
         if (octopuses) {
             physics.add.overlap(
                 ship,
@@ -113,8 +123,16 @@ export class CollisionManager {
     _onBulletHitsSaucer(bullet, saucer) {
         if (!bullet.active || !saucer.active) { return; }
         bullet.setActive(false);
+        this.scene.sound.play('saucer-hit');
         if (saucer.active) {
-            this.scene.killSaucer(saucer);
+            if (saucer.takeHit) {
+                const isDead = saucer.takeHit();
+                if (isDead) {
+                    this.scene.killBigSaucer(saucer);
+                }
+            } else {
+                this.scene.killSaucer(saucer);
+            }
         }
     }
 
@@ -137,8 +155,6 @@ export class CollisionManager {
 
     _onShipHitsSaucer(ship, saucer) {
         if (!ship.active || !saucer.active) { return; }
-        saucer.setActive(false);
-        this.scene.killSaucer(saucer);
         this.scene.killShip();
     }
 
@@ -158,6 +174,11 @@ export class CollisionManager {
                 this.scene.damageOctopusTentacle(octopus);
             }
         }
+    }
+
+    _onMineHitsAsteroid(mine, asteroid) {
+        if (!mine.active || !asteroid.active) { return; }
+        if (mine._exploding) { return; }
     }
 
     _onShipHitsOctopus(ship, octopus) {

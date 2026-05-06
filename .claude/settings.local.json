@@ -27,7 +27,11 @@
       "WebSearch",
       "Bash(awk '{print $5, $9}')",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\\\\public\" -Recurse)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(pkill -f \"vite|node\")",
+      "Bash(git checkout *)",
+      "Bash(Start-Sleep -Seconds 3)",
+      "Bash(Get-Content \"C:\\\\Users\\\\CHRIS~1.MON\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-chris-montreuil-source-js-phaser-Asteroids\\\\1ff17f9e-1e74-4b9a-a114-4b8925be3ef0\\\\tasks\\\\bxhqief55.output\" -Tail 50)"
     ]
   }
 }

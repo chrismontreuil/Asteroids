@@ -19,6 +19,8 @@ export class WaveManager {
     this.scene.ship.resetAbilities();
     this.scene.pickupManager.reset();
     this.scene.resetOctopuses();
+    this.scene.clearMines();
+    this.scene.clearAsteroids();
 
     const level = this.gameState.level;
 
@@ -49,6 +51,21 @@ export class WaveManager {
     this.scene.pickupManager.setMode('colorOnly', false);
     this.scene.pickupManager.reset();
     this.scene.clearSaucers();
+
+    // Three stationary giant asteroids
+    const asteroidPositions = [
+      { x: 300, y: 250 },
+      { x: 1620, y: 250 },
+      { x: 960, y: 830 },
+    ];
+
+    asteroidPositions.forEach(pos => {
+      const asteroid = new Asteroid(this.scene, pos.x, pos.y, 'giant');
+      this.scene.asteroids.add(asteroid);
+      asteroid.launch();
+    });
+
+    this.scene.pickupManager.setAsteroidPositions(asteroidPositions);
   }
 
   _startWave2() {
@@ -66,7 +83,14 @@ export class WaveManager {
     this.scene.clearSaucers();
     this._saucerKillCount = 0;
     this._saucerKillTarget = 1;
-    this.scene._spawnSaucer();
+    this.scene._spawnBigSaucer();
+
+    for (let i = 0; i < 10; i++) {
+      const pos = this._edgePosition();
+      const asteroid = new Asteroid(this.scene, pos.x, pos.y, 'medium');
+      this.scene.asteroids.add(asteroid);
+      asteroid.launch();
+    }
   }
 
   _startWave4() {

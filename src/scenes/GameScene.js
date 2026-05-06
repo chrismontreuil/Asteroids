@@ -1,6 +1,7 @@
 import { Ship }             from '../objects/Ship.js';
 import { Asteroid }         from '../objects/Asteroid.js';
 import { Saucer }           from '../objects/Saucer.js';
+import { BigSaucer }        from '../objects/BigSaucer.js';
 import { Octopus }          from '../objects/Octopus.js';
 import { GameState }        from '../systems/GameState.js';
 import { InputHandler }     from '../systems/InputHandler.js';
@@ -32,6 +33,7 @@ export class GameScene extends Phaser.Scene {
         this.pickups        = this.physics.add.group();
         this.saucers        = this.physics.add.group();
         this.saucerBullets  = this.physics.add.group();
+        this.mines          = this.physics.add.group();
         this.octopuses      = this.physics.add.group();
         this.tentacles      = this.physics.add.group();
 
@@ -46,7 +48,7 @@ export class GameScene extends Phaser.Scene {
 
         // Wire collisions
         this.collisionManager = new CollisionManager(this);
-        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets, this.octopuses, this.tentacles);
+        this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets, this.mines, this.octopuses, this.tentacles);
 
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
@@ -141,6 +143,14 @@ export class GameScene extends Phaser.Scene {
             WrapBounds.wrap(this, b);
             b.update(delta);
         });
+
+        const allMines = [...this.mines.getChildren()];
+        allMines.forEach(m => {
+            WrapBounds.wrap(this, m);
+            m.update(delta);
+        });
+
+        this._checkMineExplosions();
 
         // Wrap pickups
         const allPickups = [...this.pickups.getChildren()];
@@ -238,6 +248,12 @@ export class GameScene extends Phaser.Scene {
             this.ship.body.setAcceleration(0, 0);
             this.ship.setAngle(0);
             this.ship.startInvulnerability(INVULNERABILITY_MS);
+
+            const activeSaucers = this.saucers.getChildren().filter(s => s.active);
+            activeSaucers.forEach(saucer => {
+              saucer.setPosition(SCREEN_W - 100, Phaser.Math.Between(0, SCREEN_H));
+              saucer.body.setVelocity(0, 0);
+            });
         }
     }
 
@@ -341,6 +357,16 @@ export class GameScene extends Phaser.Scene {
         saucers.forEach(s => s.die());
     }
 
+    clearMines() {
+        const mines = [...this.mines.getChildren()];
+        mines.forEach(m => m.die());
+    }
+
+    clearAsteroids() {
+        const asteroids = [...this.asteroids.getChildren()];
+        asteroids.forEach(a => a.destroy());
+    }
+
     _cancelSaucerTimers() {
         if (this._saucerSpawnTimer) {
             this.time.removeEvent(this._saucerSpawnTimer);
@@ -350,6 +376,84 @@ export class GameScene extends Phaser.Scene {
             this.time.removeEvent(this._saucerRespawnTimer);
             this._saucerRespawnTimer = null;
         }
+    }
+
+    killBigSaucer(saucer) {
+        const extraLifeEarned = this.gameState.addScore(1000);
+        if (extraLifeEarned) {
+            this.audioManager.playExtraLife();
+        }
+        createExplosion(this, saucer.x, saucer.y, 20);
+        this.audioManager.playSaucerDeath();
+        saucer.die();
+
+        this.waveManager.onSaucerKilled();
+
+        if (this._saucerRespawnTimer) {
+            this.time.removeEvent(this._saucerRespawnTimer);
+        }
+        const respawnDelay = this.waveManager.getSaucerRespawnDelay();
+        this._saucerRespawnTimer = this.time.delayedCall(respawnDelay, () => {
+            this._spawnBigSaucer();
+        });
+    }
+
+    _spawnBigSaucer() {
+        const activeSaucers = this.saucers.countActive(true);
+        if (activeSaucers > 0) { return; }
+
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const edge = Phaser.Math.Between(0, 3);
+        let x, y;
+
+        if (edge === 0) {
+            x = Phaser.Math.Between(0, w);
+            y = 0;
+        } else if (edge === 1) {
+            x = Phaser.Math.Between(0, w);
+            y = h;
+        } else if (edge === 2) {
+            x = 0;
+            y = Phaser.Math.Between(0, h);
+        } else {
+            x = w;
+            y = Phaser.Math.Between(0, h);
+        }
+
+        const saucer = new BigSaucer(this, x, y);
+        this.saucers.add(saucer);
+    }
+
+    mineHitByBullet(mine, bullet) {
+        bullet.destroy();
+        mine._startExplosion();
+    }
+
+    _checkMineExplosions() {
+        const allMines = [...this.mines.getChildren()];
+        allMines.forEach(mine => {
+            if (mine.isExploding()) {
+                const radius = mine.getExplosionRadius();
+                const dx = this.ship.x - mine.x;
+                const dy = this.ship.y - mine.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < radius + 15) {
+                    this.killShip();
+                }
+
+                const asteroids = this.asteroids.getChildren();
+                asteroids.forEach(asteroid => {
+                    if (!asteroid.active) { return; }
+                    const adx = asteroid.x - mine.x;
+                    const ady = asteroid.y - mine.y;
+                    const adist = Math.sqrt(adx * adx + ady * ady);
+                    if (adist < radius) {
+                        this.splitAsteroid(asteroid);
+                    }
+                });
+            }
+        });
     }
 
     shutdown() {
