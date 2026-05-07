@@ -463,14 +463,14 @@ export const TextureFactory = {
     const cx = 16;
     const cy = 16;
     const size = 32;
-    g.fillStyle(0xff0000, 1);
+    g.fillStyle(0x000000, 1);
     g.beginPath();
     g.moveTo(cx, cy - 12);
     g.lineTo(cx + 12, cy + 8);
     g.lineTo(cx - 12, cy + 8);
     g.closePath();
     g.fillPath();
-    g.lineStyle(2, 0xffff00, 1);
+    g.lineStyle(2, 0x0088ff, 1);
     g.beginPath();
     g.moveTo(cx, cy - 12);
     g.lineTo(cx + 12, cy + 8);

@@ -56,6 +56,7 @@ export class GameScene extends Phaser.Scene {
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
         this.waveManager.startWave();
+        this._setWaveBackground(this.gameState.level);
 
         // HUD (drawn on top of everything)
         this.scoreText = this.add.text(16, 16, 'SCORE: 0', {
@@ -289,8 +290,22 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
+    _setWaveBackground(level) {
+        const waveColors = [
+            0x0a0010, // purple
+            0x100008, // pink
+            0x100500, // orange
+            0x000510, // blue
+            0x001518, // teal
+        ];
+        const color = waveColors[(level - 1) % waveColors.length];
+        this.cameras.main.setBackgroundColor(color);
+    }
+
     // Called by WaveManager to show "WAVE N" overlay
     showWaveLabel(level) {
+        this._setWaveBackground(level);
+
         this.waveText.setText('WAVE ' + level);
         this.tweens.add({
             targets:  this.waveText,
