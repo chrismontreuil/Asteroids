@@ -66,6 +66,10 @@ export class PickupManager {
     }
 
     spawnNext() {
+        if (this.mode === 'blueWeapon') {
+            return;
+        }
+
         if (!this.spawnedTypes.has(this.nextPickupType)) {
             const pos = this._findSafeSpawnPos();
 

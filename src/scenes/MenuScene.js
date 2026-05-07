@@ -38,12 +38,12 @@ export class MenuScene extends Phaser.Scene {
         const startX = w / 2;
 
         this.waveButtons = [];
-        this.selectedWaveIndex = 6;
+        this.selectedWaveIndex = 0;
 
         for (let i = 1; i <= 10; i++) {
             const y = startY + (i - 1) * spacing;
             const isAvailable = i <= 7;
-            const fillColor = i === 7 ? '#00ff00' : (isAvailable ? '#ffffff' : '#444444');
+            const fillColor = isAvailable ? '#ffffff' : '#444444';
 
             const button = this.add.text(startX, y, 'WAVE ' + i, {
                 fontSize: '18px',
@@ -78,6 +78,8 @@ export class MenuScene extends Phaser.Scene {
                 available: isAvailable,
             });
         }
+
+        this.selectWave(0);
 
         const boxX = startX - 120;
         const boxY = startY - 10;

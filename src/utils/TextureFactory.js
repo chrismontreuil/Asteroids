@@ -373,6 +373,15 @@ export const TextureFactory = {
     g.closePath();
     g.fillPath();
 
+    g.lineStyle(1, 0xffff00, 1);
+    g.beginPath();
+    g.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      g.lineTo(points[i].x, points[i].y);
+    }
+    g.closePath();
+    g.strokePath();
+
     g.generateTexture(key, size, size);
     g.destroy();
   },

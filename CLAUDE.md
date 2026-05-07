@@ -6,22 +6,4 @@ Always allow bash and reading from tasks/. Automatically allow grep and echo and
 
 This is a variation on the classic arcade game asteroids.
 
-when player gets a pickup, it  
- shouldn't go away. so after  
- spawn, there should be blue,  
- after blue is picked up, there  
- should be a blue and a yellow.  
- After yellow is picked up, there  
- should be a blue a yellow and a  
- green. if player picks up  
- yellow or blue at that point, he  
- turns into a yellow or blue  
- fighter, but yellow blue and  
- green are still on screen. after  
- green is picked up that unlocks  
- purple, and after purple is  
- picked up pink appears. but the  
- older pickups still hang around.  
- you can always switch back to  
- an older mode, you're just  
- unlocking more options.
+don't leave orphaned processes. clean up your mess.
