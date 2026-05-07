@@ -147,6 +147,7 @@ export class CollisionManager {
     _onSaucerHitsAsteroid(saucer, asteroid) {
         if (!saucer.active || !asteroid.active) { return; }
         if (asteroid.size === 'giant') { return; }
+        if (saucer.takeHit) { return; }
         saucer.setActive(false);
         asteroid.setActive(false);
         this.scene.killSaucer(saucer);

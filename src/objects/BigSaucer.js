@@ -16,7 +16,7 @@ export class BigSaucer extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5);
     this.setScale(1);
-    this.body.setCircle(35, 5, 0);
+    this.body.setCircle(56, 0, 0);
     this.setVisible(false);
 
     this._health = BIG_SAUCER_MAX_HEALTH;
@@ -61,14 +61,54 @@ export class BigSaucer extends Phaser.Physics.Arcade.Sprite {
     const blue = 0;
     const fillColor = (red << 16) | (green << 8) | blue;
 
-    this._graphics.fillStyle(fillColor, 1);
-    this._graphics.fillEllipse(this.x + 40, this.y + 40, 75, 20);
-    this._graphics.fillEllipse(this.x + 40, this.y + 28, 40, 24);
+    const cx = this.x + 50;
+    const cy = this.y + 53;
 
+    // Main body - symmetric top and bottom
+    this._graphics.fillStyle(fillColor, 1);
+    this._graphics.beginPath();
+    this._graphics.moveTo(cx - 72, cy);        // Left point
+    this._graphics.lineTo(cx - 32, cy + 28); // Left bottom angle
+    this._graphics.lineTo(cx + 32, cy + 28); // Right bottom angle
+    this._graphics.lineTo(cx + 72, cy);       // Right point
+    this._graphics.lineTo(cx + 32, cy - 28); // Right top angle
+    this._graphics.lineTo(cx - 32, cy - 28); // Left top angle
+    this._graphics.closePath();
+    this._graphics.fillPath();
+
+    // Stroke outline - body only
     this._graphics.lineStyle(2, 0xffffff, 1);
-    this._graphics.strokeEllipse(this.x + 40, this.y + 40, 75, 20);
-    this._graphics.strokeEllipse(this.x + 40, this.y + 28, 40, 24);
-    this._graphics.lineBetween(this.x + 16, this.y + 30, this.x + 64, this.y + 30);
+    this._graphics.beginPath();
+    this._graphics.moveTo(cx - 72, cy);
+    this._graphics.lineTo(cx - 32, cy - 28);
+    this._graphics.lineTo(cx + 32, cy - 28);
+    this._graphics.lineTo(cx + 72, cy);
+    this._graphics.lineTo(cx + 32, cy + 28);
+    this._graphics.lineTo(cx - 32, cy + 28);
+    this._graphics.closePath();
+    this._graphics.strokePath();
+
+    // Dome - semicircle ellipse (top half only)
+    this._graphics.lineStyle(2, 0xffffff, 1);
+    this._graphics.beginPath();
+    this._graphics.moveTo(cx - 32.4, cy - 28);
+    for (let i = 1; i <= 10; i++) {
+      const angle = Math.PI * (1 - i / 10);
+      const x = cx + 32.4 * Math.cos(angle);
+      const y = (cy - 28) - 19.44 * Math.sin(angle);
+      this._graphics.lineTo(x, y);
+    }
+    this._graphics.strokePath();
+
+    // Horizontal dividing line through middle
+    this._graphics.lineStyle(2, 0xffffff, 1);
+    this._graphics.lineBetween(cx - 72, cy, cx + 72, cy);
+
+    // Three white portholes in top section (stroked, not filled)
+    this._graphics.lineStyle(2, 0xffffff, 1);
+    this._graphics.strokeCircle(cx - 24, cy - 14, 10);
+    this._graphics.strokeCircle(cx, cy - 14, 10);
+    this._graphics.strokeCircle(cx + 24, cy - 14, 10);
   }
 
   _steer() {

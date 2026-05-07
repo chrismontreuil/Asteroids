@@ -71,7 +71,6 @@ export const TextureFactory = {
     }
     this._createBullet(scene);
     this._createParticle(scene);
-    this._createSaucer(scene);
     this._createBigSaucer(scene);
     this._createMine(scene);
     this._createOctopus(scene);
@@ -404,29 +403,58 @@ export const TextureFactory = {
     g.destroy();
   },
 
-  _createSaucer(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    g.fillStyle(0x660000, 1);
-    g.fillEllipse(30, 28, 56, 14);
-    g.fillEllipse(30, 20, 28, 16);
-    g.lineStyle(2, 0xffffff, 1);
-    g.strokeEllipse(30, 28, 56, 14);
-    g.strokeEllipse(30, 20, 28, 16);
-    g.lineBetween(16, 22, 44, 22);
-    g.generateTexture(TEX.SAUCER, 60, 40);
-    g.destroy();
-  },
-
   _createBigSaucer(scene) {
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const cx = 50;
+    const cy = 52;
+
+    // Main body - symmetric top and bottom
     g.fillStyle(0xff0000, 1);
-    g.fillEllipse(40, 40, 75, 20);
-    g.fillEllipse(40, 28, 40, 24);
+    g.beginPath();
+    g.moveTo(cx - 72, cy);        // Left point
+    g.lineTo(cx - 32, cy + 28); // Left bottom angle
+    g.lineTo(cx + 32, cy + 28); // Right bottom angle
+    g.lineTo(cx + 72, cy);       // Right point
+    g.lineTo(cx + 32, cy - 28); // Right top angle
+    g.lineTo(cx - 32, cy - 28); // Left top angle
+    g.closePath();
+    g.fillPath();
+
+    // Stroke outline - body only
     g.lineStyle(2, 0xffffff, 1);
-    g.strokeEllipse(40, 40, 75, 20);
-    g.strokeEllipse(40, 28, 40, 24);
-    g.lineBetween(16, 30, 64, 30);
-    g.generateTexture('big-saucer', 80, 70);
+    g.beginPath();
+    g.moveTo(cx - 72, cy);
+    g.lineTo(cx - 32, cy - 28);
+    g.lineTo(cx + 32, cy - 28);
+    g.lineTo(cx + 72, cy);
+    g.lineTo(cx + 32, cy + 28);
+    g.lineTo(cx - 32, cy + 28);
+    g.closePath();
+    g.strokePath();
+
+    // Dome - semicircle ellipse (top half only)
+    g.lineStyle(2, 0xffffff, 1);
+    g.beginPath();
+    g.moveTo(cx - 32.4, cy - 28);
+    for (let i = 1; i <= 10; i++) {
+      const angle = Math.PI * (1 - i / 10);
+      const x = cx + 32.4 * Math.cos(angle);
+      const y = (cy - 28) - 19.44 * Math.sin(angle);
+      g.lineTo(x, y);
+    }
+    g.strokePath();
+
+    // Horizontal dividing line through middle
+    g.lineStyle(2, 0xffffff, 1);
+    g.lineBetween(cx - 72, cy, cx + 72, cy);
+
+    // Three white portholes in top section (stroked, not filled)
+    g.lineStyle(2, 0xffffff, 1);
+    g.strokeCircle(cx - 24, cy - 14, 10);
+    g.strokeCircle(cx, cy - 14, 10);
+    g.strokeCircle(cx + 24, cy - 14, 10);
+
+    g.generateTexture('big-saucer', 100, 108);
     g.destroy();
   },
 
