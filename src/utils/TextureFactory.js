@@ -460,21 +460,21 @@ export const TextureFactory = {
 
   _createMine(scene) {
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    const cx = 8;
-    const cy = 8;
-    const size = 16;
-    g.fillStyle(0x333333, 1);
+    const cx = 16;
+    const cy = 16;
+    const size = 32;
+    g.fillStyle(0xff0000, 1);
     g.beginPath();
-    g.moveTo(cx, cy - 6);
-    g.lineTo(cx + 6, cy + 4);
-    g.lineTo(cx - 6, cy + 4);
+    g.moveTo(cx, cy - 12);
+    g.lineTo(cx + 12, cy + 8);
+    g.lineTo(cx - 12, cy + 8);
     g.closePath();
     g.fillPath();
-    g.lineStyle(1.5, 0xffff00, 1);
+    g.lineStyle(2, 0xffff00, 1);
     g.beginPath();
-    g.moveTo(cx, cy - 6);
-    g.lineTo(cx + 6, cy + 4);
-    g.lineTo(cx - 6, cy + 4);
+    g.moveTo(cx, cy - 12);
+    g.lineTo(cx + 12, cy + 8);
+    g.lineTo(cx - 12, cy + 8);
     g.closePath();
     g.strokePath();
     g.generateTexture('mine', size, size);

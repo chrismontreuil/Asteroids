@@ -40,9 +40,9 @@ export class MenuScene extends Phaser.Scene {
         this.waveButtons = [];
         this.selectedWaveIndex = 0;
 
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 12; i++) {
             const y = startY + (i - 1) * spacing;
-            const isAvailable = i <= 7;
+            const isAvailable = i <= 12;
             const fillColor = isAvailable ? '#ffffff' : '#444444';
 
             const button = this.add.text(startX, y, 'WAVE ' + i, {
@@ -96,7 +96,7 @@ export class MenuScene extends Phaser.Scene {
             fontFamily: 'monospace',
         });
 
-        this.add.text(w / 2, startY + 9 * spacing + 85, 'PRESS ENTER', {
+        this.add.text(w / 2, startY + 11 * spacing + 85, 'PRESS ENTER', {
             fontSize: '16px',
             fill: '#ffffff',
             fontFamily: 'monospace',
@@ -125,7 +125,7 @@ export class MenuScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keydown-DOWN', () => {
-            this.selectWave(Math.min(6, this.selectedWaveIndex + 1));
+            this.selectWave(Math.min(11, this.selectedWaveIndex + 1));
         });
 
         this.input.keyboard.once('keydown-ENTER', () => {

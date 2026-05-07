@@ -35,7 +35,11 @@
       "Bash(find *)",
       "PowerShell(Rename-Item *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\" -Recurse -Filter \"*saucer*\")",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(winget --version)",
+      "Bash(choco --version)",
+      "PowerShell(winget *)",
+      "PowerShell(node --version)"
     ]
   }
 }

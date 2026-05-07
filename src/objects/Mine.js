@@ -10,7 +10,7 @@ export class Mine extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5);
     this.setScale(1);
-    this.body.setCircle(8, 0, 0);
+    this.body.setCircle(16, 0, 0);
 
     this._rotation = 0;
     this._elapsed = 0;
