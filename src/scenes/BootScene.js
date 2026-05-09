@@ -27,7 +27,9 @@ export class BootScene extends Phaser.Scene {
 
     create() {
         TextureFactory.createAll(this);
-        this.scene.start('MenuScene');
+        document.fonts.load('16px "Press Start 2P"').then(() => {
+            this.scene.start('MenuScene');
+        });
     }
 }
 
