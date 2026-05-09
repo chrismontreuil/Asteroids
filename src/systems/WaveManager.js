@@ -59,20 +59,6 @@ export class WaveManager {
     this.scene.pickupManager.reset();
     this.scene.clearSaucers();
 
-    // Three stationary giant asteroids
-    const asteroidPositions = [
-      { x: 300, y: 250 },
-      { x: 1620, y: 250 },
-      { x: 960, y: 830 },
-    ];
-
-    asteroidPositions.forEach(pos => {
-      const asteroid = new Asteroid(this.scene, pos.x, pos.y, 'giant');
-      this.scene.asteroids.add(asteroid);
-      asteroid.launch();
-    });
-
-    this.scene.pickupManager.setAsteroidPositions(asteroidPositions);
   }
 
   _startWave2() {

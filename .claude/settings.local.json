@@ -41,7 +41,8 @@
       "PowerShell(winget *)",
       "PowerShell(node --version)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\\\\src\" -Recurse -Include \"*.js\")",
-      "Bash(code . *)"
+      "Bash(code . *)",
+      "Bash(findstr /i \"start\\\\|dev\\\\|serve\\\\|scripts\")"
     ]
   }
 }
