@@ -42,7 +42,14 @@
       "PowerShell(node --version)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\\\\src\" -Recurse -Include \"*.js\")",
       "Bash(code . *)",
-      "Bash(findstr /i \"start\\\\|dev\\\\|serve\\\\|scripts\")"
+      "Bash(findstr /i \"start\\\\|dev\\\\|serve\\\\|scripts\")",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Force | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse -Depth 2 -Force | Where-Object {$_.PSIsContainer} | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\\\\src\" -Recurse | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}} | Format-Table -AutoSize)",
+      "PowerShell(Head *)",
+      "PowerShell(Test-Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\\\\dist\" -PathType Container; if \\($?\\) { \\(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\\\\dist\" -Recurse\\).Count })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Directory -Force -ErrorAction SilentlyContinue | Where-Object {$_.Name -match \"^\\\\.\"} | Select-Object Name)",
+      "Bash(grep -v \"^\\\\.$|^\\\\.\\\\.$\")"
     ]
   }
 }
