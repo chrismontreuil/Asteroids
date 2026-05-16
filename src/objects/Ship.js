@@ -18,9 +18,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // Pivot at hull center (y=35 of 100px texture); display at 40×50px
+        // Pivot at hull center (y=35 of 100px texture); display at 60×75px
         this.setOrigin(0.5, 0.35);
-        this.setScale(0.5);
+        this.setScale(0.75);
 
         // Circular hitbox in display-pixel space (radius 16, centered on hull)
         this.body.setCircle(16, 4, 2);
@@ -70,7 +70,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         }
 
         // setTexture resets scale — reapply after every swap
-        this.setScale(0.5);
+        this.setScale(0.75);
 
         // Fire
         if (input.state.fire) {

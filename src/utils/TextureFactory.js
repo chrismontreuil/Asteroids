@@ -92,12 +92,26 @@ export const TextureFactory = {
     const ctx = canvas.getContext('2d');
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
-    if (tint) {
-      ctx.fillStyle = '#' + tint.toString(16).padStart(6, '0');
-      ctx.globalAlpha = 0.3;
-      ctx.fillRect(0, 0, 80, 100);
+    if (tint !== null) {
+      const r = (tint >> 16) & 0xff;
+      const g = (tint >> 8) & 0xff;
+      const b = tint & 0xff;
+
+      const imageData = ctx.getImageData(0, 15, 80, 80);
+      const data = imageData.data;
+
+      for (let i = 3; i < data.length; i += 4) {
+        const alpha = data[i];
+        if (alpha > 0) {
+          data[i - 3] = Math.floor(data[i - 3] * r / 255);
+          data[i - 2] = Math.floor(data[i - 2] * g / 255);
+          data[i - 1] = Math.floor(data[i - 1] * b / 255);
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 15);
     }
 
     scene.textures.addCanvas(textureName, canvas);
@@ -135,7 +149,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas(TEX.SHIP_THRUST, canvas);
   },
@@ -175,11 +189,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
-
-    ctx.fillStyle = '#0099ff';
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(0, 0, 80, 100);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas("ship-burst-thrust", canvas);
   },
@@ -219,11 +229,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
-
-    ctx.fillStyle = '#ffff00';
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(0, 0, 80, 100);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas("ship-wide-thrust", canvas);
   },
@@ -263,11 +269,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
-
-    ctx.fillStyle = '#00ff00';
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(0, 0, 80, 100);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas(TEX.SHIP_HEAT_THRUST, canvas);
   },
@@ -307,11 +309,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
-
-    ctx.fillStyle = '#9900ff';
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(0, 0, 80, 100);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas(TEX.SHIP_PURPLE_THRUST, canvas);
   },
@@ -351,11 +349,7 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 10, 80, 80);
-
-    ctx.fillStyle = '#ff0099';
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(0, 0, 80, 100);
+    ctx.drawImage(img, 0, 15, 80, 80);
 
     scene.textures.addCanvas(TEX.SHIP_PINK_THRUST, canvas);
   },
