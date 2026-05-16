@@ -18,12 +18,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // Pivot at hull center (y=35 of 100px texture); display at 60×75px
-        this.setOrigin(0.5, 0.35);
-        this.setScale(0.75);
+        // Pivot at hull center (y=55 of 100px texture — hull spans y=15 to y=95)
+        this.setOrigin(0.5, 0.55);
+        this.setScale(0.65);
 
-        // Circular hitbox in display-pixel space (radius 16, centered on hull)
-        this.body.setCircle(16, 4, 2);
+        // Circle centered at origin (40,55) in texture space
+        this.body.setCircle(14, 26, 41);
         this.body.setMaxVelocity(SHIP_MAX_SPEED, SHIP_MAX_SPEED);
         this.body.setDamping(true);
         this.body.setDrag(0.99, 0.99);
@@ -70,7 +70,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         }
 
         // setTexture resets scale — reapply after every swap
-        this.setScale(0.75);
+        this.setScale(0.65);
 
         // Fire
         if (input.state.fire) {
