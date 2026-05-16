@@ -15,32 +15,42 @@ export class MenuScene extends Phaser.Scene {
             this.sound.play('rock-cinematic');
         }
 
-        this.add.text(w / 2, h * 0.12, 'ASTEROIDS ON STEROIDS', {
+        this.add.text(w / 2, h * 0.10, 'ASTEROIDS', {
             fontSize:   '56px',
             fill:       '#ffffff',
-            fontFamily: 'monospace',
+            fontFamily: '"Press Start 2P", monospace',
         }).setOrigin(0.5);
 
-        this.add.text(w / 2, h * 0.25, 'HIGH SCORE: ' + highScore, {
+        this.add.text(w / 2, h * 0.18, 'ON STEROIDS', {
+            fontSize:   '72px',
+            fill:       '#ffff00',
+            fontFamily: '"Permanent Marker", cursive',
+            stroke:     '#cc8800',
+            strokeThickness: 3,
+            shadow:     { color: '#ffcc00', blur: 8, fill: true, offsetX: 2, offsetY: 2 },
+            padding:    { x: 20, y: 20 },
+        }).setOrigin(0.5).setAngle(-3);
+
+        this.add.text(w / 2, h * 0.28, 'HIGH SCORE: ' + highScore, {
             fontSize:   '24px',
             fill:       '#aaaaaa',
             fontFamily: 'monospace',
         }).setOrigin(0.5);
 
-        this.add.text(w / 2, h * 0.36, 'SELECT WAVE', {
+        this.add.text(w / 2, h * 0.33, 'SELECT WAVE', {
             fontSize:   '18px',
             fill:       '#ffffff',
             fontFamily: 'monospace',
         }).setOrigin(0.5);
 
-        const startY = h * 0.42;
+        const startY = h * 0.38;
         const spacing = 32;
         const startX = w / 2;
 
         this.waveButtons = [];
         this.selectedWaveIndex = 0;
 
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 12; i++) {
             const y = startY + (i - 1) * spacing;
             const isAvailable = i <= 7;
             const fillColor = isAvailable ? '#ffffff' : '#444444';
@@ -96,7 +106,7 @@ export class MenuScene extends Phaser.Scene {
             fontFamily: 'monospace',
         });
 
-        this.add.text(w / 2, startY + 9 * spacing + 85, 'PRESS ENTER', {
+        this.add.text(w / 2, startY + 11 * spacing + 40, 'PRESS ENTER', {
             fontSize: '16px',
             fill: '#ffffff',
             fontFamily: 'monospace',

@@ -3,6 +3,7 @@ import {
   BIG_SAUCER_AVOID_RADIUS,
   BIG_SAUCER_FIRE_INTERVAL,
   BIG_SAUCER_MAX_HEALTH,
+  CENTER_EXCLUSION_RADIUS,
 } from '../constants.js';
 import { Mine } from './Mine.js';
 import { WrapBounds } from '../utils/WrapBounds.js';
@@ -134,6 +135,17 @@ export class BigSaucer extends Phaser.Physics.Arcade.Sprite {
         desiredVx -= (adx / dist) * repulsionStrength * BIG_SAUCER_SPEED * 0.8;
         desiredVy -= (ady / dist) * repulsionStrength * BIG_SAUCER_SPEED * 0.8;
       }
+    }
+
+    const cx = this.scene.scale.width / 2;
+    const cy = this.scene.scale.height / 2;
+    const cdx = this.x - cx;
+    const cdy = this.y - cy;
+    const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
+    if (cdist < CENTER_EXCLUSION_RADIUS && cdist > 0) {
+      const strength = (CENTER_EXCLUSION_RADIUS - cdist) / CENTER_EXCLUSION_RADIUS;
+      desiredVx += (cdx / cdist) * strength * BIG_SAUCER_SPEED * 3;
+      desiredVy += (cdy / cdist) * strength * BIG_SAUCER_SPEED * 3;
     }
 
     const speed = Math.sqrt(desiredVx * desiredVx + desiredVy * desiredVy);

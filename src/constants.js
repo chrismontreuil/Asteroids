@@ -112,6 +112,8 @@ export const MINE_EXPLOSION_RADIUS = 300;
 export const MINE_EXPLOSION_DURATION = 300;
 export const MINE_SPEED = 250;
 
+export const CENTER_EXCLUSION_RADIUS = 70;
+
 export const OCTOPUS_SPEED = 0;
 export const OCTOPUS_FIRE_INTERVAL = 3000;
 export const OCTOPUS_TENTACLE_REGROW_DELAY = 5000;

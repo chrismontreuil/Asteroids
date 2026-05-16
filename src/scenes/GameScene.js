@@ -3,6 +3,7 @@ import { Asteroid }         from '../objects/Asteroid.js';
 import { Saucer }           from '../objects/Saucer.js';
 import { BigSaucer }        from '../objects/BigSaucer.js';
 import { Octopus }          from '../objects/Octopus.js';
+import { BlackHole }        from '../objects/BlackHole.js';
 import { GameState }        from '../systems/GameState.js';
 import { InputHandler }     from '../systems/InputHandler.js';
 import { WaveManager }      from '../systems/WaveManager.js';
@@ -12,7 +13,7 @@ import { PickupManager }    from '../systems/PickupManager.js';
 import { SoundtrackManager } from '../systems/SoundtrackManager.js';
 import { WrapBounds }       from '../utils/WrapBounds.js';
 import { createExplosion }  from '../utils/Explosion.js';
-import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE, OCTOPUS_BODY_SCORE, OCTOPUS_TENTACLE_SCORE } from '../constants.js';
+import { SCREEN_W, SCREEN_H, SPLITS_INTO, INVULNERABILITY_MS, SAUCER_SPAWN_DELAY, SAUCER_RESPAWN_DELAY, SAUCER_SCORE, OCTOPUS_BODY_SCORE, OCTOPUS_TENTACLE_SCORE, CENTER_EXCLUSION_RADIUS, SHIP_MAX_SPEED } from '../constants.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -50,9 +51,12 @@ export class GameScene extends Phaser.Scene {
         this.collisionManager = new CollisionManager(this);
         this.collisionManager.register(this.ship, this.bullets, this.asteroids, this.pickups, this.saucers, this.saucerBullets, this.mines, this.octopuses, this.tentacles);
 
+        this.blackHole = null;
+
         // Wave manager starts the first wave
         this.waveManager = new WaveManager(this, this.gameState);
         this.waveManager.startWave();
+        this._setWaveBackground(this.gameState.level);
 
         // HUD (drawn on top of everything)
         this.scoreText = this.add.text(16, 16, 'SCORE: 0', {
@@ -96,6 +100,13 @@ export class GameScene extends Phaser.Scene {
             this.audioManager.stopThruster();
         }
         this._thrusterWasOn = thrustOn;
+
+        if (this.blackHole && this.ship.active) {
+            const fellIn = this.blackHole.update(this.ship, delta);
+            if (fellIn) {
+                this.killShip();
+            }
+        }
 
         // Screen wrapping
         WrapBounds.wrap(this, this.ship);
@@ -163,6 +174,28 @@ export class GameScene extends Phaser.Scene {
         // Update octopuses
         const allOctopuses = [...this.octopuses.getChildren()];
         allOctopuses.forEach(o => o.update(delta));
+
+        // Push all enemies out of center exclusion zone
+        const cx = this.scale.width / 2;
+        const cy = this.scale.height / 2;
+        const allEnemies = [...allSaucers, ...allOctopuses];
+        for (const enemy of allEnemies) {
+            if (!enemy.active) continue;
+            const dx = enemy.x - cx;
+            const dy = enemy.y - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < CENTER_EXCLUSION_RADIUS && dist > 0) {
+                enemy.x = cx + (dx / dist) * CENTER_EXCLUSION_RADIUS;
+                enemy.y = cy + (dy / dist) * CENTER_EXCLUSION_RADIUS;
+                const vx = enemy.body.velocity.x;
+                const vy = enemy.body.velocity.y;
+                const dot = vx * (dx / dist) + vy * (dy / dist);
+                if (dot < 0) {
+                    enemy.body.velocity.x -= 2 * dot * (dx / dist);
+                    enemy.body.velocity.y -= 2 * dot * (dy / dist);
+                }
+            }
+        }
 
         // Wave logic
         this.waveManager.update(time, delta);
@@ -257,8 +290,22 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
+    _setWaveBackground(level) {
+        const waveColors = [
+            0x0a0010, // purple
+            0x100008, // pink
+            0x100500, // orange
+            0x000510, // blue
+            0x001518, // teal
+        ];
+        const color = waveColors[(level - 1) % waveColors.length];
+        this.cameras.main.setBackgroundColor(color);
+    }
+
     // Called by WaveManager to show "WAVE N" overlay
     showWaveLabel(level) {
+        this._setWaveBackground(level);
+
         this.waveText.setText('WAVE ' + level);
         this.tweens.add({
             targets:  this.waveText,
@@ -365,6 +412,20 @@ export class GameScene extends Phaser.Scene {
     clearAsteroids() {
         const asteroids = [...this.asteroids.getChildren()];
         asteroids.forEach(a => a.destroy());
+    }
+
+    createBlackHole() {
+        this.clearBlackHole();
+        this.blackHole = new BlackHole(this);
+        this.ship.body.setMaxVelocity(600, 600);
+    }
+
+    clearBlackHole() {
+        if (this.blackHole) {
+            this.blackHole.destroy();
+            this.blackHole = null;
+            this.ship.body.setMaxVelocity(SHIP_MAX_SPEED, SHIP_MAX_SPEED);
+        }
     }
 
     _cancelSaucerTimers() {

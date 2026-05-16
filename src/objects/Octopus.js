@@ -3,6 +3,7 @@ import {
   OCTOPUS_TENTACLE_REGROW_DELAY,
   OCTOPUS_BODY_SCORE,
   OCTOPUS_TENTACLE_SCORE,
+  CENTER_EXCLUSION_RADIUS,
 } from '../constants.js';
 import { WrapBounds } from '../utils/WrapBounds.js';
 
@@ -32,6 +33,14 @@ export class Octopus extends Phaser.Physics.Arcade.Sprite {
 
     this.bodyCollider = null;
     this._createBodyCollider();
+
+    this.xMin = null;
+    this.xMax = null;
+  }
+
+  setXBounds(xMin, xMax) {
+    this.xMin = xMin;
+    this.xMax = xMax;
   }
 
   _initTentacleOffsets() {
@@ -77,6 +86,7 @@ export class Octopus extends Phaser.Physics.Arcade.Sprite {
     this._animateTentacles(delta);
     this._updateTentacleColliders();
     WrapBounds.wrap(this.scene, this);
+    this._clampXBounds();
   }
 
   _updateTentacleColliders() {
@@ -117,7 +127,36 @@ export class Octopus extends Phaser.Physics.Arcade.Sprite {
       desiredVy = (dy / distToPlayer) * speed;
     }
 
+    const cx = this.scene.scale.width / 2;
+    const cy = this.scene.scale.height / 2;
+    const cdx = this.x - cx;
+    const cdy = this.y - cy;
+    const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
+    if (cdist < CENTER_EXCLUSION_RADIUS && cdist > 0) {
+      const strength = (CENTER_EXCLUSION_RADIUS - cdist) / CENTER_EXCLUSION_RADIUS;
+      desiredVx += (cdx / cdist) * strength * 40 * 3;
+      desiredVy += (cdy / cdist) * strength * 40 * 3;
+    }
+
+    if (this.xMin !== null && this.x <= this.xMin && desiredVx < 0) {
+      desiredVx = 0;
+    }
+    if (this.xMax !== null && this.x >= this.xMax && desiredVx > 0) {
+      desiredVx = 0;
+    }
+
     this.body.setVelocity(desiredVx, desiredVy);
+  }
+
+  _clampXBounds() {
+    if (this.xMin !== null && this.x < this.xMin) {
+      this.x = this.xMin;
+      this.body.velocity.x = 0;
+    }
+    if (this.xMax !== null && this.x > this.xMax) {
+      this.x = this.xMax;
+      this.body.velocity.x = 0;
+    }
   }
 
   _animateTentacles(delta) {

@@ -3,6 +3,7 @@ import {
   SAUCER_SPEED,
   SAUCER_AVOID_RADIUS,
   SAUCER_FIRE_INTERVAL,
+  CENTER_EXCLUSION_RADIUS,
 } from '../constants.js';
 import { Bullet } from './Bullet.js';
 import { WrapBounds } from '../utils/WrapBounds.js';
@@ -66,6 +67,17 @@ export class Saucer extends Phaser.Physics.Arcade.Sprite {
         desiredVx -= (adx / dist) * repulsionStrength * SAUCER_SPEED * 0.8;
         desiredVy -= (ady / dist) * repulsionStrength * SAUCER_SPEED * 0.8;
       }
+    }
+
+    const cx = this.scene.scale.width / 2;
+    const cy = this.scene.scale.height / 2;
+    const cdx = this.x - cx;
+    const cdy = this.y - cy;
+    const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
+    if (cdist < CENTER_EXCLUSION_RADIUS && cdist > 0) {
+      const strength = (CENTER_EXCLUSION_RADIUS - cdist) / CENTER_EXCLUSION_RADIUS;
+      desiredVx += (cdx / cdist) * strength * SAUCER_SPEED * 3;
+      desiredVy += (cdy / cdist) * strength * SAUCER_SPEED * 3;
     }
 
     const speed = Math.sqrt(desiredVx * desiredVx + desiredVy * desiredVy);

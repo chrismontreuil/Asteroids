@@ -10,13 +10,20 @@ export class Mine extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5);
     this.setScale(1);
-    this.body.setCircle(8, 0, 0);
+    this.body.setCircle(16, 0, 0);
 
     this._rotation = 0;
     this._elapsed = 0;
     this._exploding = false;
     this._explosionRadius = 0;
     this._explosionGraphics = null;
+
+    this._cornerGraphics = scene.add.graphics();
+    this._cornerGraphics.setDepth(5);
+    this._blinkOn = true;
+    this._blinkTimer = 0;
+    this._blinkInterval = 400;
+    this._drawCorners();
   }
 
   launch(angleRad) {
@@ -47,10 +54,39 @@ export class Mine extends Phaser.Physics.Arcade.Sprite {
     this._rotation += delta * 0.006;
     this.setRotation(this._rotation);
 
+    this._blinkTimer += delta;
+    if (this._blinkTimer >= this._blinkInterval) {
+      this._blinkTimer -= this._blinkInterval;
+      this._blinkOn = !this._blinkOn;
+    }
+    this._drawCorners();
+
     WrapBounds.wrap(this.scene, this);
 
     if (this._elapsed >= MINE_LIFESPAN) {
       this._startExplosion();
+    }
+  }
+
+  _drawCorners() {
+    if (!this._cornerGraphics) { return; }
+    this._cornerGraphics.clear();
+    if (!this._blinkOn) { return; }
+
+    // Triangle vertices relative to center, rotated
+    const verts = [
+      { x: 0, y: -12 },
+      { x: 12, y: 8 },
+      { x: -12, y: 8 },
+    ];
+    const cos = Math.cos(this._rotation);
+    const sin = Math.sin(this._rotation);
+
+    this._cornerGraphics.fillStyle(0xff0000, 1);
+    for (const v of verts) {
+      const rx = v.x * cos - v.y * sin;
+      const ry = v.x * sin + v.y * cos;
+      this._cornerGraphics.fillCircle(this.x + rx, this.y + ry, 2.5);
     }
   }
 
@@ -61,6 +97,9 @@ export class Mine extends Phaser.Physics.Arcade.Sprite {
     this._elapsed = 0;
     this.body.setVelocity(0, 0);
     this.setVisible(false);
+    if (this._cornerGraphics) {
+      this._cornerGraphics.clear();
+    }
 
     if (this.scene) {
       this._explosionGraphics = this.scene.add.graphics({ x: this.x, y: this.y });
@@ -114,6 +153,10 @@ export class Mine extends Phaser.Physics.Arcade.Sprite {
     if (this._explosionGraphics) {
       this._explosionGraphics.destroy();
       this._explosionGraphics = null;
+    }
+    if (this._cornerGraphics) {
+      this._cornerGraphics.destroy();
+      this._cornerGraphics = null;
     }
   }
 }
