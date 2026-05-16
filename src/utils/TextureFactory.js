@@ -117,7 +117,7 @@ export const TextureFactory = {
     scene.textures.addCanvas(textureName, canvas);
   },
 
-  _createShipThrust(scene) {
+  _createShipThrustFromSVG(scene, textureName, tint) {
     const canvas = document.createElement('canvas');
     canvas.width = 80;
     canvas.height = 100;
@@ -149,9 +149,38 @@ export const TextureFactory = {
     ctx.fill();
 
     const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
 
-    scene.textures.addCanvas(TEX.SHIP_THRUST, canvas);
+    if (tint === null) {
+      ctx.drawImage(img, 0, 15, 80, 80);
+    } else {
+      const tmp = document.createElement('canvas');
+      tmp.width = 80;
+      tmp.height = 100;
+      const tmpCtx = tmp.getContext('2d');
+      tmpCtx.drawImage(img, 0, 15, 80, 80);
+
+      const r = (tint >> 16) & 0xff;
+      const g = (tint >> 8) & 0xff;
+      const b = tint & 0xff;
+
+      const imageData = tmpCtx.getImageData(0, 0, 80, 100);
+      const data = imageData.data;
+      for (let i = 3; i < data.length; i += 4) {
+        if (data[i] > 0) {
+          data[i - 3] = Math.floor(data[i - 3] * r / 255);
+          data[i - 2] = Math.floor(data[i - 2] * g / 255);
+          data[i - 1] = Math.floor(data[i - 1] * b / 255);
+        }
+      }
+      tmpCtx.putImageData(imageData, 0, 0);
+      ctx.drawImage(tmp, 0, 0);
+    }
+
+    scene.textures.addCanvas(textureName, canvas);
+  },
+
+  _createShipThrust(scene) {
+    this._createShipThrustFromSVG(scene, TEX.SHIP_THRUST, null);
   },
 
   _createShipBurst(scene) {
@@ -159,39 +188,7 @@ export const TextureFactory = {
   },
 
   _createShipBurstThrust(scene) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
-    ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-    ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
-
-    scene.textures.addCanvas("ship-burst-thrust", canvas);
+    this._createShipThrustFromSVG(scene, "ship-burst-thrust", 0x0099ff);
   },
 
   _createShipWide(scene) {
@@ -199,39 +196,7 @@ export const TextureFactory = {
   },
 
   _createShipWideThrust(scene) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
-    ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-    ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
-
-    scene.textures.addCanvas("ship-wide-thrust", canvas);
+    this._createShipThrustFromSVG(scene, "ship-wide-thrust", 0xffff00);
   },
 
   _createShipHeat(scene) {
@@ -239,39 +204,7 @@ export const TextureFactory = {
   },
 
   _createShipHeatThrust(scene) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
-    ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-    ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
-
-    scene.textures.addCanvas(TEX.SHIP_HEAT_THRUST, canvas);
+    this._createShipThrustFromSVG(scene, TEX.SHIP_HEAT_THRUST, 0x00ff00);
   },
 
   _createShipPurple(scene) {
@@ -279,39 +212,7 @@ export const TextureFactory = {
   },
 
   _createShipPurpleThrust(scene) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
-    ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-    ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
-
-    scene.textures.addCanvas(TEX.SHIP_PURPLE_THRUST, canvas);
+    this._createShipThrustFromSVG(scene, TEX.SHIP_PURPLE_THRUST, 0x9900ff);
   },
 
   _createShipPink(scene) {
@@ -319,39 +220,7 @@ export const TextureFactory = {
   },
 
   _createShipPinkThrust(scene) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
-    ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-    ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
-    ctx.closePath();
-    ctx.fill();
-
-    const img = scene.textures.get('fighter-double').getSourceImage();
-    ctx.drawImage(img, 0, 15, 80, 80);
-
-    scene.textures.addCanvas(TEX.SHIP_PINK_THRUST, canvas);
+    this._createShipThrustFromSVG(scene, TEX.SHIP_PINK_THRUST, 0xff0099);
   },
 
   _drawShipBody(g) {
