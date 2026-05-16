@@ -235,6 +235,8 @@ export class PickupManager {
 
         if (this.mode !== 'none') {
             this._spawnInitial();
+        } else if (this.upgradePickupTier <= 3) {
+            this._spawnUpgradePickup(this.upgradePickupTier);
         }
     }
 }

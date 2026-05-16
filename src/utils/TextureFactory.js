@@ -76,24 +76,26 @@ export const TextureFactory = {
 
   _createShipTier(scene, suffix, svgKey) {
     const b = `ship${suffix}`;
+    const flameCount = suffix === '2' ? 2 : 1;
+    const baseY     = suffix === '2' ? 83 : 91;
     this._createShipFromSVG(scene, b,                    null,     svgKey);
     this._createShipFromSVG(scene, `${b}-burst`,         0x0099ff, svgKey);
     this._createShipFromSVG(scene, `${b}-wide`,          0xffff00, svgKey);
     this._createShipFromSVG(scene, `${b}-heat`,          0x00ff00, svgKey);
     this._createShipFromSVG(scene, `${b}-purple`,        0x9900ff, svgKey);
     this._createShipFromSVG(scene, `${b}-pink`,          0xff0099, svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-thrust`,         null,     svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-burst-thrust`,   0x0099ff, svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-wide-thrust`,    0xffff00, svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-heat-thrust`,    0x00ff00, svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-purple-thrust`,  0x9900ff, svgKey);
-    this._createShipThrustFromSVG(scene, `${b}-pink-thrust`,    0xff0099, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-thrust`,         null,     svgKey, flameCount, baseY);
+    this._createShipThrustFromSVG(scene, `${b}-burst-thrust`,   0x0099ff, svgKey, flameCount, baseY);
+    this._createShipThrustFromSVG(scene, `${b}-wide-thrust`,    0xffff00, svgKey, flameCount, baseY);
+    this._createShipThrustFromSVG(scene, `${b}-heat-thrust`,    0x00ff00, svgKey, flameCount, baseY);
+    this._createShipThrustFromSVG(scene, `${b}-purple-thrust`,  0x9900ff, svgKey, flameCount, baseY);
+    this._createShipThrustFromSVG(scene, `${b}-pink-thrust`,    0xff0099, svgKey, flameCount, baseY);
   },
 
   _createShipFromSVG(scene, textureName, tint, svgKey = 'fighter-single') {
     const canvas = document.createElement('canvas');
     canvas.width = 80;
-    canvas.height = 100;
+    canvas.height = 120;
     const ctx = canvas.getContext('2d');
 
     const img = scene.textures.get(svgKey).getSourceImage();
@@ -122,36 +124,47 @@ export const TextureFactory = {
     scene.textures.addCanvas(textureName, canvas);
   },
 
-  _createShipThrustFromSVG(scene, textureName, tint, svgKey = 'fighter-single') {
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    // Flame drawn before hull so it appears behind
+  _drawFlame(ctx, cx, baseY) {
     ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
     ctx.beginPath();
-    ctx.moveTo(32, 75);
-    ctx.lineTo(40, 96);
-    ctx.lineTo(48, 75);
+    ctx.moveTo(cx - 12, baseY);
+    ctx.lineTo(cx, baseY + 32);
+    ctx.lineTo(cx + 12, baseY);
     ctx.closePath();
     ctx.fill();
 
     ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
     ctx.beginPath();
-    ctx.moveTo(35, 75);
-    ctx.lineTo(40, 89);
-    ctx.lineTo(45, 75);
+    ctx.moveTo(cx - 7, baseY);
+    ctx.lineTo(cx, baseY + 21);
+    ctx.lineTo(cx + 7, baseY);
     ctx.closePath();
     ctx.fill();
 
     ctx.fillStyle = 'rgba(255, 255, 255, 1)';
     ctx.beginPath();
-    ctx.moveTo(37, 75);
-    ctx.lineTo(40, 82);
-    ctx.lineTo(43, 75);
+    ctx.moveTo(cx - 4, baseY);
+    ctx.lineTo(cx, baseY + 11);
+    ctx.lineTo(cx + 4, baseY);
     ctx.closePath();
     ctx.fill();
+  },
+
+  _createShipThrustFromSVG(scene, textureName, tint, svgKey = 'fighter-single', flameCount = 1, baseY = 75) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 120;
+    const ctx = canvas.getContext('2d');
+
+    const flameCenters = {
+      1: [40],
+      2: [26, 54],
+      3: [22, 40, 58],
+    };
+    const centers = flameCenters[flameCount] || [40];
+    for (const cx of centers) {
+      this._drawFlame(ctx, cx, baseY);
+    }
 
     const img = scene.textures.get(svgKey).getSourceImage();
 
@@ -160,7 +173,7 @@ export const TextureFactory = {
     } else {
       const tmp = document.createElement('canvas');
       tmp.width = 80;
-      tmp.height = 100;
+      tmp.height = 120;
       const tmpCtx = tmp.getContext('2d');
       tmpCtx.drawImage(img, 0, 15, 80, 80);
 
@@ -168,7 +181,7 @@ export const TextureFactory = {
       const g = (tint >> 8) & 0xff;
       const b = tint & 0xff;
 
-      const imageData = tmpCtx.getImageData(0, 0, 80, 100);
+      const imageData = tmpCtx.getImageData(0, 0, 80, 120);
       const data = imageData.data;
       for (let i = 3; i < data.length; i += 4) {
         if (data[i] > 0) {

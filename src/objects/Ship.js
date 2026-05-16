@@ -18,8 +18,8 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // Pivot at hull center (y=55 of 100px texture — hull spans y=15 to y=95)
-        this.setOrigin(0.5, 0.55);
+        // Pivot at hull center (y=55 of 120px texture — hull spans y=15 to y=95)
+        this.setOrigin(0.5, 0.458);
         this.setScale(this._scaleForTier());
 
         // Circle centered at origin (40,55) in texture space
@@ -54,7 +54,9 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _scaleForTier() {
-        return this.shipTier === 1 ? 0.5 : 0.65;
+        if (this.shipTier === 3) return 0.8;
+        if (this.shipTier === 2) return 0.65;
+        return 0.5;
     }
 
     update(input) {
@@ -301,17 +303,51 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     _fireOnce() {
         const rad = Phaser.Math.DegToRad(this.angle - 90);
         const tint = this.hasBurstFire ? 0x0099ff : 0xffffff;
-        this._fireOnceAtAngle(rad, tint);
+
+        if (this.shipTier === 3) {
+            this._fireConverging(rad, tint);
+        } else if (this.shipTier === 2) {
+            this._fireDouble(rad, tint);
+        } else {
+            this._fireOnceAtAngle(rad, tint);
+        }
+    }
+
+    _fireDouble(rad, tint) {
+        const W = 8;
+        const noseX = this.x + Math.cos(rad) * 15;
+        const noseY = this.y + Math.sin(rad) * 15;
+        const perpX = Math.sin(rad);
+        const perpY = -Math.cos(rad);
+
+        this._spawnBulletAt(noseX + perpX * W, noseY + perpY * W, rad, tint);
+        this._spawnBulletAt(noseX - perpX * W, noseY - perpY * W, rad, tint);
+    }
+
+    _fireConverging(rad, tint) {
+        const W = 18;
+        const noseX = this.x + Math.cos(rad) * 15;
+        const noseY = this.y + Math.sin(rad) * 15;
+        const perpX = Math.sin(rad);
+        const perpY = -Math.cos(rad);
+
+        this._spawnBulletAt(noseX, noseY, rad, tint);
+        this._spawnBulletAt(noseX + perpX * W, noseY + perpY * W, rad, tint);
+        this._spawnBulletAt(noseX - perpX * W, noseY - perpY * W, rad, tint);
     }
 
     _fireOnceAtAngle(rad, tint, scale = 1) {
-        const bullets = this.scene.bullets.getChildren();
-        if (bullets.length >= MAX_PLAYER_BULLETS) { return; }
-
         const noseX = this.x + Math.cos(rad) * 15;
         const noseY = this.y + Math.sin(rad) * 15;
+        this._spawnBulletAt(noseX, noseY, rad, tint, scale);
+    }
 
-        const bullet = new Bullet(this.scene, noseX, noseY);
+    _spawnBulletAt(x, y, rad, tint, scale = 1) {
+        const bullets = this.scene.bullets.getChildren();
+        const maxBullets = this.shipTier === 3 ? 18 : MAX_PLAYER_BULLETS;
+        if (bullets.length >= maxBullets) { return; }
+
+        const bullet = new Bullet(this.scene, x, y);
         bullet.setTint(tint);
         bullet.setScale(scale);
         this.scene.bullets.add(bullet);
