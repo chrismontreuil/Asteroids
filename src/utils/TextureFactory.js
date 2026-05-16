@@ -82,153 +82,282 @@ export const TextureFactory = {
   },
 
   _createShip(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBody(g);
-    g.generateTexture(TEX.SHIP, 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, TEX.SHIP, null);
+  },
+
+  _createShipFromSVG(scene, textureName, tint) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
+
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    if (tint) {
+      ctx.fillStyle = '#' + tint.toString(16).padStart(6, '0');
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(0, 0, 80, 100);
+    }
+
+    scene.textures.addCanvas(textureName, canvas);
   },
 
   _createShipThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
     // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBody(g);
-    g.generateTexture(TEX.SHIP_THRUST, 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    scene.textures.addCanvas(TEX.SHIP_THRUST, canvas);
   },
 
   _createShipBurst(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBodyTinted(g, 0x0099ff);
-    g.generateTexture("ship-burst", 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, "ship-burst", 0x0099ff);
   },
 
   _createShipBurstThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
-    // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBodyTinted(g, 0x0099ff);
-    g.generateTexture("ship-burst-thrust", 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    ctx.fillStyle = '#0099ff';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(0, 0, 80, 100);
+
+    scene.textures.addCanvas("ship-burst-thrust", canvas);
   },
 
   _createShipWide(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBodyTinted(g, 0xffff00);
-    g.generateTexture("ship-wide", 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, "ship-wide", 0xffff00);
   },
 
   _createShipWideThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
-    // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBodyTinted(g, 0xffff00);
-    g.generateTexture("ship-wide-thrust", 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    ctx.fillStyle = '#ffff00';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(0, 0, 80, 100);
+
+    scene.textures.addCanvas("ship-wide-thrust", canvas);
   },
 
   _createShipHeat(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBodyTinted(g, 0x00ff00);
-    g.generateTexture(TEX.SHIP_HEAT, 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, TEX.SHIP_HEAT, 0x00ff00);
   },
 
   _createShipHeatThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
-    // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBodyTinted(g, 0x00ff00);
-    g.generateTexture(TEX.SHIP_HEAT_THRUST, 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    ctx.fillStyle = '#00ff00';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(0, 0, 80, 100);
+
+    scene.textures.addCanvas(TEX.SHIP_HEAT_THRUST, canvas);
   },
 
   _createShipPurple(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBodyTinted(g, 0x9900ff);
-    g.generateTexture(TEX.SHIP_PURPLE, 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, TEX.SHIP_PURPLE, 0x9900ff);
   },
 
   _createShipPurpleThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
-    // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBodyTinted(g, 0x9900ff);
-    g.generateTexture(TEX.SHIP_PURPLE_THRUST, 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    ctx.fillStyle = '#9900ff';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(0, 0, 80, 100);
+
+    scene.textures.addCanvas(TEX.SHIP_PURPLE_THRUST, canvas);
   },
 
   _createShipPink(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
-    this._drawShipBodyTinted(g, 0xff0099);
-    g.generateTexture(TEX.SHIP_PINK, 80, 100);
-    g.destroy();
+    this._createShipFromSVG(scene, TEX.SHIP_PINK, 0xff0099);
   },
 
   _createShipPinkThrust(scene) {
-    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
 
-    // Flame drawn before hull so it appears behind
-    g.fillStyle(0xff4400, 0.7);
-    g.fillTriangle(32, 75, 40, 96, 48, 75);
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(32, 75);
+    ctx.lineTo(40, 96);
+    ctx.lineTo(48, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffcc00, 0.9);
-    g.fillTriangle(35, 75, 40, 89, 45, 75);
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(35, 75);
+    ctx.lineTo(40, 89);
+    ctx.lineTo(45, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    g.fillStyle(0xffffff, 1);
-    g.fillTriangle(37, 75, 40, 82, 43, 75);
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    ctx.beginPath();
+    ctx.moveTo(37, 75);
+    ctx.lineTo(40, 82);
+    ctx.lineTo(43, 75);
+    ctx.closePath();
+    ctx.fill();
 
-    this._drawShipBodyTinted(g, 0xff0099);
-    g.generateTexture(TEX.SHIP_PINK_THRUST, 80, 100);
-    g.destroy();
+    const img = scene.textures.get('fighter-double').getSourceImage();
+    ctx.drawImage(img, 0, 10, 80, 80);
+
+    ctx.fillStyle = '#ff0099';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(0, 0, 80, 100);
+
+    scene.textures.addCanvas(TEX.SHIP_PINK_THRUST, canvas);
   },
 
   _drawShipBody(g) {
