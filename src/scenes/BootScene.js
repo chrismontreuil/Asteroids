@@ -7,7 +7,9 @@ export class BootScene extends Phaser.Scene {
 
     preload() {
         this.load.image('saucer', 'img/saucer.svg');
+        this.load.image('fighter-single', 'img/fighter-single.svg');
         this.load.image('fighter-double', 'img/fighter-double.svg');
+        this.load.image('fighter-triple', 'img/fighter-triple.svg');
         this.load.audio('explosion-giant', 'sound-fx/lordsonny-punch-a-rock-161647.mp3');
         this.load.audio('explosion-large', 'sound-fx/lordsonny-small-rock-break-194553.mp3');
         this.load.audio('explosion-medium', 'sound-fx/lumora_studios-pixel-explosion-319166.mp3');

@@ -53,7 +53,9 @@
       "Bash(timeout 5 bash -c 'until curl -s http://localhost:5173 > /dev/null 2>&1; do sleep 0.5; done')",
       "Bash(netstat -tlnp)",
       "Bash(cat vite.config.js)",
-      "Bash(cat vite.config.mjs)"
+      "Bash(cat vite.config.mjs)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse -Directory)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse | Where-Object {$_.PSIsContainer} | Select-Object FullName)"
     ]
   }
 }

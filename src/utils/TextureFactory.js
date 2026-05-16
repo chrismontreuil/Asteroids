@@ -2,18 +2,9 @@ import { TEX } from "../constants.js";
 
 export const TextureFactory = {
   createAll(scene) {
-    this._createShip(scene);
-    this._createShipThrust(scene);
-    this._createShipBurst(scene);
-    this._createShipBurstThrust(scene);
-    this._createShipWide(scene);
-    this._createShipWideThrust(scene);
-    this._createShipHeat(scene);
-    this._createShipHeatThrust(scene);
-    this._createShipPurple(scene);
-    this._createShipPurpleThrust(scene);
-    this._createShipPink(scene);
-    this._createShipPinkThrust(scene);
+    this._createShipTier(scene, '',  'fighter-single');
+    this._createShipTier(scene, '2', 'fighter-double');
+    this._createShipTier(scene, '3', 'fighter-triple');
     for (let i = 0; i < 4; i++) {
       const giRadii = [
         { x: 220, y: 180 },
@@ -79,19 +70,33 @@ export const TextureFactory = {
     this._createGreenPickup(scene);
     this._createPurplePickup(scene);
     this._createPinkPickup(scene);
+    this._createNumberedPickup(scene, 2);
+    this._createNumberedPickup(scene, 3);
   },
 
-  _createShip(scene) {
-    this._createShipFromSVG(scene, TEX.SHIP, null);
+  _createShipTier(scene, suffix, svgKey) {
+    const b = `ship${suffix}`;
+    this._createShipFromSVG(scene, b,                    null,     svgKey);
+    this._createShipFromSVG(scene, `${b}-burst`,         0x0099ff, svgKey);
+    this._createShipFromSVG(scene, `${b}-wide`,          0xffff00, svgKey);
+    this._createShipFromSVG(scene, `${b}-heat`,          0x00ff00, svgKey);
+    this._createShipFromSVG(scene, `${b}-purple`,        0x9900ff, svgKey);
+    this._createShipFromSVG(scene, `${b}-pink`,          0xff0099, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-thrust`,         null,     svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-burst-thrust`,   0x0099ff, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-wide-thrust`,    0xffff00, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-heat-thrust`,    0x00ff00, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-purple-thrust`,  0x9900ff, svgKey);
+    this._createShipThrustFromSVG(scene, `${b}-pink-thrust`,    0xff0099, svgKey);
   },
 
-  _createShipFromSVG(scene, textureName, tint) {
+  _createShipFromSVG(scene, textureName, tint, svgKey = 'fighter-single') {
     const canvas = document.createElement('canvas');
     canvas.width = 80;
     canvas.height = 100;
     const ctx = canvas.getContext('2d');
 
-    const img = scene.textures.get('fighter-double').getSourceImage();
+    const img = scene.textures.get(svgKey).getSourceImage();
     ctx.drawImage(img, 0, 15, 80, 80);
 
     if (tint !== null) {
@@ -117,7 +122,7 @@ export const TextureFactory = {
     scene.textures.addCanvas(textureName, canvas);
   },
 
-  _createShipThrustFromSVG(scene, textureName, tint) {
+  _createShipThrustFromSVG(scene, textureName, tint, svgKey = 'fighter-single') {
     const canvas = document.createElement('canvas');
     canvas.width = 80;
     canvas.height = 100;
@@ -148,7 +153,7 @@ export const TextureFactory = {
     ctx.closePath();
     ctx.fill();
 
-    const img = scene.textures.get('fighter-double').getSourceImage();
+    const img = scene.textures.get(svgKey).getSourceImage();
 
     if (tint === null) {
       ctx.drawImage(img, 0, 15, 80, 80);
@@ -177,50 +182,6 @@ export const TextureFactory = {
     }
 
     scene.textures.addCanvas(textureName, canvas);
-  },
-
-  _createShipThrust(scene) {
-    this._createShipThrustFromSVG(scene, TEX.SHIP_THRUST, null);
-  },
-
-  _createShipBurst(scene) {
-    this._createShipFromSVG(scene, "ship-burst", 0x0099ff);
-  },
-
-  _createShipBurstThrust(scene) {
-    this._createShipThrustFromSVG(scene, "ship-burst-thrust", 0x0099ff);
-  },
-
-  _createShipWide(scene) {
-    this._createShipFromSVG(scene, "ship-wide", 0xffff00);
-  },
-
-  _createShipWideThrust(scene) {
-    this._createShipThrustFromSVG(scene, "ship-wide-thrust", 0xffff00);
-  },
-
-  _createShipHeat(scene) {
-    this._createShipFromSVG(scene, TEX.SHIP_HEAT, 0x00ff00);
-  },
-
-  _createShipHeatThrust(scene) {
-    this._createShipThrustFromSVG(scene, TEX.SHIP_HEAT_THRUST, 0x00ff00);
-  },
-
-  _createShipPurple(scene) {
-    this._createShipFromSVG(scene, TEX.SHIP_PURPLE, 0x9900ff);
-  },
-
-  _createShipPurpleThrust(scene) {
-    this._createShipThrustFromSVG(scene, TEX.SHIP_PURPLE_THRUST, 0x9900ff);
-  },
-
-  _createShipPink(scene) {
-    this._createShipFromSVG(scene, TEX.SHIP_PINK, 0xff0099);
-  },
-
-  _createShipPinkThrust(scene) {
-    this._createShipThrustFromSVG(scene, TEX.SHIP_PINK_THRUST, 0xff0099);
   },
 
   _drawShipBody(g) {
@@ -554,6 +515,33 @@ export const TextureFactory = {
     this._strokePentagon(g, 20, 20, 16);
     g.generateTexture("pickup-pink", 40, 40);
     g.destroy();
+  },
+
+  _createNumberedPickup(scene, num) {
+    const size = 40;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#333333';
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 16, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(num.toString(), size / 2, size / 2 + 1);
+
+    scene.textures.addCanvas(`pickup-upgrade-${num}`, canvas);
   },
 
   _fillPentagon(g, cx, cy, radius) {

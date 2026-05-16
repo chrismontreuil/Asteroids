@@ -44,6 +44,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.hasPinkExplosion = false;
 
         this._colorTag = null;
+        this.shipTier = 1;
+    }
+
+    upgradeTo(tier) {
+        this.shipTier = tier;
+        this._setTextureForState(false);
     }
 
     update(input) {
@@ -334,33 +340,23 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
     }
 
     _setTextureForState(isThrusting) {
-        let colorMode;
-        if (this.hasPinkExplosion) {
-            colorMode = 'pink';
-        } else if (this.hasPurpleExplosion) {
-            colorMode = 'purple';
-        } else if (this.hasWideFire) {
-            colorMode = 'wide';
-        } else if (this.hasBurstFire) {
-            colorMode = 'burst';
-        } else if (this.hasHeatSeek) {
-            colorMode = 'heat';
-        } else {
-            colorMode = this._colorTag;
-        }
+        const tierSuffix = this.shipTier === 1 ? '' : this.shipTier.toString();
+        const base = `ship${tierSuffix}`;
 
-        if (colorMode === 'pink') {
-            this.setTexture(isThrusting ? TEX.SHIP_PINK_THRUST : TEX.SHIP_PINK);
-        } else if (colorMode === 'purple') {
-            this.setTexture(isThrusting ? TEX.SHIP_PURPLE_THRUST : TEX.SHIP_PURPLE);
-        } else if (colorMode === 'wide') {
-            this.setTexture(isThrusting ? TEX.SHIP_WIDE_THRUST : TEX.SHIP_WIDE);
-        } else if (colorMode === 'burst') {
-            this.setTexture(isThrusting ? TEX.SHIP_BURST_THRUST : TEX.SHIP_BURST);
-        } else if (colorMode === 'heat') {
-            this.setTexture(isThrusting ? TEX.SHIP_HEAT_THRUST : TEX.SHIP_HEAT);
+        let colorMode;
+        if (this.hasPinkExplosion) colorMode = 'pink';
+        else if (this.hasPurpleExplosion) colorMode = 'purple';
+        else if (this.hasWideFire) colorMode = 'wide';
+        else if (this.hasBurstFire) colorMode = 'burst';
+        else if (this.hasHeatSeek) colorMode = 'heat';
+        else colorMode = this._colorTag;
+
+        const thrustSuffix = isThrusting ? '-thrust' : '';
+
+        if (colorMode) {
+            this.setTexture(`${base}-${colorMode}${thrustSuffix}`);
         } else {
-            this.setTexture(isThrusting ? TEX.SHIP_THRUST : TEX.SHIP);
+            this.setTexture(isThrusting ? `${base}-thrust` : base);
         }
     }
 

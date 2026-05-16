@@ -4,6 +4,7 @@ import { WideFirePickup } from '../objects/WideFirePickup.js';
 import { GreenPickup } from '../objects/GreenPickup.js';
 import { PurplePickup } from '../objects/PurplePickup.js';
 import { PinkPickup } from '../objects/PinkPickup.js';
+import { ShipUpgradePickup } from '../objects/ShipUpgradePickup.js';
 import { Pickup } from '../objects/Pickup.js';
 
 export class PickupManager {
@@ -22,6 +23,7 @@ export class PickupManager {
         this.pickupsMoving = true;
         this.trainingComplete = false;
         this.asteroidPositions = [];
+        this.upgradePickupTier = 2;
 
         this._spawnInitial();
     }
@@ -38,6 +40,22 @@ export class PickupManager {
         }
 
         this.nextPickupType = 'wide';
+
+        if (this.upgradePickupTier <= 3) {
+            this._spawnUpgradePickup(this.upgradePickupTier);
+        }
+    }
+
+    _spawnUpgradePickup(tier) {
+        const pos = this._findSafeSpawnPos();
+        const pickup = new ShipUpgradePickup(this.scene, pos.x, pos.y, tier);
+        this.pickups.push(pickup);
+        this.spawnedTypes.add(`upgrade-${tier}`);
+        this.scene.pickups.add(pickup);
+
+        if (this.pickupsMoving) {
+            pickup.launch();
+        }
     }
 
     _findSafeSpawnPos() {
@@ -109,6 +127,19 @@ export class PickupManager {
 
         let pitchMultiplier = 1;
         let isLastPickup = false;
+
+        if (pickup instanceof ShipUpgradePickup) {
+            pickup.onPickup(this.scene.ship);
+            this.scene.gameState.addScore(1000);
+            this.spawnedTypes.delete(`upgrade-${pickup.num}`);
+            pickup.destroy();
+            const nextTier = pickup.num + 1;
+            if (nextTier <= 3) {
+                this.upgradePickupTier = nextTier;
+                this._spawnUpgradePickup(nextTier);
+            }
+            return;
+        }
 
         if (pickup instanceof BurstFirePickup) {
             pitchMultiplier = 0.5; // blue - lowest
@@ -198,6 +229,9 @@ export class PickupManager {
         this.pickups.forEach(p => p.destroy());
         this.pickups = [];
         this.asteroidPositions = [];
+
+        const shipTier = this.scene.ship ? this.scene.ship.shipTier : 1;
+        this.upgradePickupTier = shipTier + 1;
 
         if (this.mode !== 'none') {
             this._spawnInitial();
