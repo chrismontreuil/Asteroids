@@ -20,7 +20,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
         // Pivot at hull center (y=55 of 100px texture — hull spans y=15 to y=95)
         this.setOrigin(0.5, 0.55);
-        this.setScale(0.65);
+        this.setScale(this._scaleForTier());
 
         // Circle centered at origin (40,55) in texture space
         this.body.setCircle(14, 26, 41);
@@ -49,7 +49,12 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
     upgradeTo(tier) {
         this.shipTier = tier;
+        this.setScale(this._scaleForTier());
         this._setTextureForState(false);
+    }
+
+    _scaleForTier() {
+        return this.shipTier === 1 ? 0.5 : 0.65;
     }
 
     update(input) {
@@ -76,7 +81,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         }
 
         // setTexture resets scale — reapply after every swap
-        this.setScale(0.65);
+        this.setScale(this._scaleForTier());
 
         // Fire
         if (input.state.fire) {
@@ -495,6 +500,7 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         this.hasPurpleExplosion = false;
         this.hasPinkExplosion = false;
         this._colorTag = null;
+        this.shipTier = 1;
         this._setTextureForState(false);
         this._burstActive = false;
         this._burstCount = 0;
