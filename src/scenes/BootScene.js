@@ -6,7 +6,9 @@ export class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('saucer', 'img/saucer.svg');
+        this.load.image('saucer', "img/lil' saucy.svg");
+        this.load.image('pickup-upgrade-2', 'img/pickup2.svg');
+        this.load.image('pickup-upgrade-3', 'img/pickup3.svg');
         this.load.image('fighter-single', 'img/fighter-single.svg');
         this.load.image('fighter-double', 'img/fighter-double.svg');
         this.load.image('fighter-triple', 'img/fighter-triple.svg');

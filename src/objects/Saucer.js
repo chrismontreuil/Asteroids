@@ -17,7 +17,7 @@ export class Saucer extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5);
     this.setScale(1);
-    this.body.setCircle(28, 0, 0);
+    this.body.setCircle(28, 12, 0);
 
     this._fireTimer = this.scene.time.addEvent({
       delay: SAUCER_FIRE_INTERVAL,

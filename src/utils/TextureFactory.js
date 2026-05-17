@@ -70,8 +70,6 @@ export const TextureFactory = {
     this._createGreenPickup(scene);
     this._createPurplePickup(scene);
     this._createPinkPickup(scene);
-    this._createNumberedPickup(scene, 2);
-    this._createNumberedPickup(scene, 3);
   },
 
   _createShipTier(scene, suffix, svgKey) {

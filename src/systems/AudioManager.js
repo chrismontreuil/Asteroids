@@ -202,6 +202,42 @@ export class AudioManager {
     }
 
 
+    playUpgradePickup() {
+        const ctx = this._getCtx();
+        const baseNotes = [98, 131, 165, 196, 262, 330, 392, 524];
+        const majorThird = 5 / 4;
+        const noteDuration = 0.105;
+        const noteGap = 0.0375;
+        const now = ctx.currentTime;
+
+        baseNotes.forEach((freq, i) => {
+            const startTime = now + i * (noteDuration + noteGap);
+            const endTime = startTime + noteDuration;
+
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.type = 'square';
+            osc1.frequency.setValueAtTime(freq, startTime);
+            gain1.gain.setValueAtTime(0.175, startTime);
+            gain1.gain.exponentialRampToValueAtTime(0.001, endTime);
+            osc1.start(startTime);
+            osc1.stop(endTime);
+
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(freq * majorThird, startTime);
+            gain2.gain.setValueAtTime(0.175, startTime);
+            gain2.gain.exponentialRampToValueAtTime(0.001, endTime);
+            osc2.start(startTime);
+            osc2.stop(endTime);
+        });
+    }
+
     playPickup(pitchMultiplier = 1, pickupType = null) {
 
         const ctx = this._getCtx();

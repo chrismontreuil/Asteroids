@@ -131,6 +131,7 @@ export class PickupManager {
         if (pickup instanceof ShipUpgradePickup) {
             pickup.onPickup(this.scene.ship);
             this.scene.gameState.addScore(1000);
+            this.scene.audioManager.playUpgradePickup();
             this.spawnedTypes.delete(`upgrade-${pickup.num}`);
             pickup.destroy();
             const nextTier = pickup.num + 1;

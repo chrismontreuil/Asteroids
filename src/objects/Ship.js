@@ -138,15 +138,30 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
         const noseY = this.y + Math.sin(rad) * 15;
 
         const targets = this._get5ClosestTargetsInFront(rad);
+        const heatCap = this.shipTier >= 2 ? MAX_PLAYER_BULLETS * 2 : MAX_PLAYER_BULLETS;
+
+        let spawnPoints;
+        if (this.shipTier >= 2) {
+            const W = 8;
+            const perpX = Math.sin(rad);
+            const perpY = -Math.cos(rad);
+            spawnPoints = [
+                { x: noseX + perpX * W, y: noseY + perpY * W },
+                { x: noseX - perpX * W, y: noseY - perpY * W },
+            ];
+        } else {
+            spawnPoints = [{ x: noseX, y: noseY }];
+        }
 
         for (let i = 0; i < 5; i++) {
             const bullets = this.scene.bullets.getChildren();
-            if (bullets.length >= MAX_PLAYER_BULLETS) {
+            if (bullets.length >= heatCap) {
                 break;
             }
 
             const target = targets[i] || null;
-            const bullet = new HeatSeekBullet(this.scene, noseX, noseY, target);
+            const spawn = spawnPoints[i % spawnPoints.length];
+            const bullet = new HeatSeekBullet(this.scene, spawn.x, spawn.y, target);
             bullet.setTint(0x00ff00);
             this.scene.bullets.add(bullet);
             bullet.launch(rad, 600);
@@ -344,7 +359,13 @@ export class Ship extends Phaser.Physics.Arcade.Sprite {
 
     _spawnBulletAt(x, y, rad, tint, scale = 1) {
         const bullets = this.scene.bullets.getChildren();
-        const maxBullets = this.shipTier === 3 ? 18 : MAX_PLAYER_BULLETS;
+        const baseCap = this.shipTier === 3 ? 18 : MAX_PLAYER_BULLETS;
+        const isHighDamageColor = this.hasWideFire || this.hasHeatSeek;
+        const isMultiBarrel = this.shipTier >= 2;
+        const isBurstDouble = this.hasBurstFire && this.shipTier === 2;
+        const maxBullets = (isHighDamageColor && isMultiBarrel) ? baseCap * 2
+            : isBurstDouble ? Math.round(baseCap * 1.2)
+            : baseCap;
         if (bullets.length >= maxBullets) { return; }
 
         const bullet = new Bullet(this.scene, x, y);
