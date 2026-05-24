@@ -21,6 +21,8 @@ export class BootScene extends Phaser.Scene {
         this.load.audio('saucer-bullet', 'sound-fx/soundreality-blaster-fx-343681.mp3');
         this.load.audio('plasma', 'sound-fx/rescopicsound-sci-fi-weapon-shoot-firing-plasma-ku-01-233816.mp3');
         this.load.audio('extra-life', 'sound-fx/extra_life.mp3');
+        this.load.audio('game-ui-8', 'sound-fx/floraphonic-90s-game-ui-8-185101.mp3');
+        this.load.audio('pwlpl', 'sound-fx/pwlpl-power-up-game-sound-effect-359227.mp3');
         this.load.audio('second-wave', 'sound-fx/second_wave.mp3');
         this.load.audio('rock-cinematic', 'sound-fx/lordsonny-rock-cinematic-161648.mp3');
         this.load.audio('octopus-hit', 'sound-fx/bb6.mp3');

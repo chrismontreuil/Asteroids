@@ -24,15 +24,15 @@
      inkscape:deskcolor="#c8c8c8"
      inkscape:document-units="px"
      showguides="false"
-     inkscape:zoom="15.196429"
-     inkscape:cx="40.009401"
-     inkscape:cy="28"
+     inkscape:zoom="1"
+     inkscape:cx="40"
+     inkscape:cy="27.5"
      inkscape:window-width="1920"
      inkscape:window-height="1111"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer2" />
   <defs
      id="defs1">
     <inkscape:perspective
@@ -48,7 +48,7 @@
      id="layer2"
      inkscape:label="Layer 2">
     <rect
-       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.915616;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.75247489;stroke-dasharray:none;stroke-opacity:1"
        id="rect42-8"
        width="5.1633644"
        height="1.9771721"
@@ -56,7 +56,7 @@
        y="8.9244747"
        ry="0.42611468" />
     <rect
-       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.915616;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.75247489;stroke-dasharray:none;stroke-opacity:1"
        id="rect42"
        width="5.1633644"
        height="1.9771721"
@@ -109,7 +109,7 @@
          y="9.0188389" /></text>
     <path
        sodipodi:type="star"
-       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.70459912;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.59924638;stroke-dasharray:none;stroke-opacity:1"
        id="path41"
        inkscape:flatsided="false"
        sodipodi:sides="3"
@@ -126,7 +126,7 @@
        transform="matrix(1.719128,0,0,0.91720197,3.1593719,1.0787551)" />
     <path
        sodipodi:type="star"
-       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.70459912;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3e3e3e;fill-opacity:1;stroke:#ffffff;stroke-width:0.59924638;stroke-dasharray:none;stroke-opacity:1"
        id="path41-8"
        inkscape:flatsided="false"
        sodipodi:sides="3"

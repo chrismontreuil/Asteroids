@@ -346,13 +346,19 @@ export class AudioManager {
 
     playExtraLife() {
         if (this._scene && this._scene.sound) {
-            this._scene.sound.play('extra-life');
+            this._scene.sound.play('game-ui-8', { volume: 0.8 });
         }
     }
 
     playSecondWave() {
         if (this._scene && this._scene.sound) {
             this._scene.sound.play('second-wave');
+        }
+    }
+
+    playWaveSound(soundKey) {
+        if (this._scene && this._scene.sound) {
+            this._scene.sound.play(soundKey);
         }
     }
 

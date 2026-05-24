@@ -1,6 +1,6 @@
 import { Asteroid } from "../objects/Asteroid.js";
 import { Octopus } from "../objects/Octopus.js";
-import { SAUCER_RESPAWN_DELAY } from '../constants.js';
+import { SAUCER_RESPAWN_DELAY, INVULNERABILITY_MS } from '../constants.js';
 
 export class WaveManager {
   constructor(scene, gameState) {
@@ -24,6 +24,7 @@ export class WaveManager {
     this.scene.clearBlackHole();
 
     const level = this.gameState.level;
+    const isTrainingWave = level >= 1 && level <= 6;
 
     if (level === 1) {
       this._startWave1();
@@ -51,7 +52,12 @@ export class WaveManager {
 
     if (!this._firstWave) {
       this.scene.showWaveLabel(level);
-      this.scene.audioManager.playSecondWave();
+      if (isTrainingWave) {
+        this.scene.audioManager.playWaveSound('pwlpl');
+      } else {
+        this.scene.audioManager.playSecondWave();
+      }
+      this.scene.ship.startInvulnerability(INVULNERABILITY_MS);
     }
     this._firstWave = false;
   }

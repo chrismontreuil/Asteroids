@@ -55,7 +55,14 @@
       "Bash(cat vite.config.js)",
       "Bash(cat vite.config.mjs)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse -Directory)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse | Where-Object {$_.PSIsContainer} | Select-Object FullName)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\chris\\\\source\\\\javascript\\\\phaser\\\\Asteroids\" -Recurse | Where-Object {$_.PSIsContainer} | Select-Object FullName)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(npm --version)",
+      "Bash(npx eslint *)",
+      "Bash(dir \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\")",
+      "Bash(findstr /i \"sound\\\\|public\\\\|assets\")",
+      "PowerShell(ls \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\" | Where-Object {$_.PSIsContainer})",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\chris.montreuil\\\\source\\\\js\\\\phaser\\\\Asteroids\\\\public\\\\sound-fx\" | ForEach-Object {$_.Name})"
     ]
   }
 }
